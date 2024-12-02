@@ -128,7 +128,7 @@ else:
 ##############################################
 # [Visual 2] Days from Campaign to Streaming #
 ##############################################
-f start_date > end_date:
+if start_date > end_date:
     st.sidebar.error("Start date must be before end date.")
 
 else:
