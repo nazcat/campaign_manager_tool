@@ -9,10 +9,11 @@ import matplotlib.ticker as mtick
 ############################
 # load files for dashboard #
 ############################
-totals = pd.read_csv(r'data/totals.csv')
-df_imp_evnt_agg = pd.read_csv(r'data/install_event_binned_users.csv')
-partners = pd.read_csv(r'data/marketing_partners_users.csv')
-states = pd.read_csv(r'data/states_totals.csv')
+totals = pd.read_csv('//Users//nuremek//Documents//MADS//SIADS699//totals.csv')
+# df_imp_evnt_agg = pd.read_csv('//Users//nuremek//Documents//MADS//SIADS699//install_event_binned_users.csv')
+date_diff_totals = pd.read_csv('//Users//nuremek//Documents//MADS//SIADS699//install_event_binned_date.csv')
+partners = pd.read_csv('//Users//nuremek//Documents//MADS//SIADS699//marketing_partners_users.csv')
+states = pd.read_csv('//Users//nuremek//Documents//MADS//SIADS699//states_totals.csv')
 
 
 ###############################
@@ -127,30 +128,44 @@ else:
 ##############################################
 # [Visual 2] Days from Campaign to Streaming #
 ##############################################
-fig2 = plt.figure(figsize=(6, 4))
+f start_date > end_date:
+    st.sidebar.error("Start date must be before end date.")
 
-bars = plt.bar(df_imp_evnt_agg['imp_evnt_binned'], df_imp_evnt_agg['device_id'], color='#00274C') # '#00274C','#FFCB05'
-for bar in bars:
-    yval = bar.get_height()
-    plt.annotate(f'{int(yval/1000)}K',
-                 xy=(bar.get_x() + bar.get_width() / 2, yval),
-                 xytext=(0, 3),  # 3 points vertical offset
-                 textcoords='offset points',
-                 ha='center', va='bottom')
+else:
+    # Filter DataFrame by selected dates
+    filtered_date_diff_df = date_diff_totals[(pd.to_datetime(date_diff_totals['event_date']) >= pd.to_datetime(start_date)) & (pd.to_datetime(date_diff_totals['event_date']) <= pd.to_datetime(end_date))]
 
-# plot average
-plt.axhline(y=df_imp_evnt_agg['device_id'].mean(), color='#FFCB05', ls='--', label='Average') # '#00274C','#FFCB05'
+    # bin impression to event date diffs
+    imp_inst_bins = [-1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 120]
+    imp_inst_labels = ['1','2','3','4','5','6','7','8','9','10','11-120']
+    filtered_date_diff_df['imp_evnt_binned'] = pd.cut(filtered_date_diff_df['impression_event_date_diff'], bins=imp_inst_bins, labels=imp_inst_labels)
+    del filtered_date_diff_df['impression_event_date_diff']
 
-plt.ylabel('Total Users',fontsize=10)
-plt.xlabel('Days', fontsize=10)
+    df_imp_evnt_agg = filtered_date_diff_df.groupby('imp_evnt_binned')['device_id'].sum().reset_index()
 
-# Set the y limits making the maximum 10% greater
-ymin, ymax = min(df_imp_evnt_agg['device_id']), max(df_imp_evnt_agg['device_id'])
-plt.ylim(ymin, 1.1 * ymax)
-plt.gca().yaxis.set_major_formatter(mtick.FuncFormatter(lambda x, _: f'{int(x/1000)}K'))
-plt.title("Days from Campaign to Streaming")
-plt.xticks(rotation=45)
-plt.legend()
+    fig2 = plt.figure(figsize=(6, 4))
+
+    bars = plt.bar(df_imp_evnt_agg['imp_evnt_binned'], df_imp_evnt_agg['device_id'], color='#00274C') # '#00274C','#FFCB05'
+    for bar in bars:
+        yval = bar.get_height()
+        plt.annotate(f'{int(yval/1000)}K',
+                     xy=(bar.get_x() + bar.get_width() / 2, yval),
+                     xytext=(0, 3),  # 3 points vertical offset
+                     textcoords='offset points',
+                     ha='center', va='bottom')
+
+    # plot average
+    plt.axhline(y=df_imp_evnt_agg['device_id'].mean(), color='#FFCB05', ls='--', label='Average') # '#00274C','#FFCB05'
+
+    plt.ylabel('Total Users',fontsize=10)
+    plt.xlabel('Days', fontsize=10)
+
+    # Set the y limits making the maximum 10% greater
+    ymin, ymax = min(df_imp_evnt_agg['device_id']), max(df_imp_evnt_agg['device_id'])
+    plt.ylim(ymin, 1.1 * ymax)
+    plt.gca().yaxis.set_major_formatter(mtick.FuncFormatter(lambda x, _: f'{int(x/1000)}K'))
+    plt.title("Days from Campaign to Streaming")
+    plt.xticks(rotation=45)
 
 
 ##############################################################
