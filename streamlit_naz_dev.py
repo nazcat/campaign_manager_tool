@@ -90,36 +90,7 @@ else:
 #########################################
 # [Visual 1] Users by Marketing Partner #
 #########################################
-fig1, ax1 = plt.subplots(figsize=(6, 4))
-fig1.suptitle("Total Users by by Marketing Partner", fontsize=14, y=0.95)
 
-bars = plt.bar(partners['marketing_partner'], partners['device_id'], color='#00274C') # '#00274C','#FFCB05'
-for bar in bars:
-    yval = bar.get_height()
-    plt.annotate(f'{int(yval)}',
-                 xy=(bar.get_x() + bar.get_width() / 2, yval),
-                 xytext=(0, 3),  # 3 points vertical offset
-                 textcoords='offset points',
-                 ha='center', va='bottom')
-
-# plot average
-plt.axhline(y=partners['device_id'].mean(), color='#FFCB05', ls='--', label='Average') # '#00274C','#FFCB05'
-
-plt.ylabel('Total Users',fontsize=10)
-plt.xlabel('Days', fontsize=10)
-
-# Set the y limits making the maximum 10% greater
-ymin, ymax = min(partners['device_id']), max(partners['device_id'])
-plt.ylim(ymin, 1.1 * ymax)
-plt.gca().yaxis.set_major_formatter(mtick.FuncFormatter(lambda x, _: f'{int(x/1000)}K'))
-
-plt.xticks(rotation=45)
-plt.legend()
-
-
-###########################
-# OR display as pie chart #
-###########################
 if start_date > end_date:
     st.sidebar.error("Start date must be before end date.")
 
@@ -137,7 +108,7 @@ else:
     color_theme = px.colors.qualitative.Set3
 
     # Create the Pie Chart
-    fig4 = px.pie(
+    fig1 = px.pie(
         filtered_partner_df,
         names='marketing_partner',      # Labels
         values='device_id',             # Values
@@ -148,7 +119,7 @@ else:
     )
 
     # Customize hover template to display total device_id and percentage
-    fig4.update_traces(
+    fig1.update_traces(
         textinfo='percent',            # Show percentages on the pie chart
         hovertemplate='<b>%{label}</b><br>Total Devices: %{value}<br>Percentage: %{percent}'
     )
@@ -246,7 +217,7 @@ col1, col2 = st.columns((6,4))
 with col1:
     st.plotly_chart(fig3)
 with col2:
-    st.plotly_chart(fig4)
+    st.plotly_chart(fig1)
 
 # # Row 2
 # st.markdown('### Line chart')
