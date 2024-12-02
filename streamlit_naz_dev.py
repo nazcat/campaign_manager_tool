@@ -120,31 +120,38 @@ plt.legend()
 ###########################
 # OR display as pie chart #
 ###########################
-labels = partners['marketing_partner']
-sizes = partners['device_id']
+if start_date > end_date:
+    st.sidebar.error("Start date must be before end date.")
 
-total_device_id = partners['device_id'].sum()
-partners['percentage'] = partners['device_id'] / total_device_id * 100
+else:
+    # Filter DataFrame by selected dates
+    filtered_partner_df = partners[(pd.to_datetime(partners['event_date']) >= pd.to_datetime(start_date)) & (pd.to_datetime(partners['event_date']) <= pd.to_datetime(end_date))]
 
-# define color theme for chart
-color_theme = px.colors.qualitative.Set3
+    labels = filtered_partner_df['marketing_partner']
+    sizes = filtered_partner_df['device_id']
 
-# Create the Pie Chart
-fig4 = px.pie(
-    partners,
-    names='marketing_partner',      # Labels
-    values='device_id',             # Values
-    title='Total Users by Marketing Partner',
-    hover_data={'device_id': True, 'percentage': True},  # Hover details
-    labels={'device_id': 'Total Users', 'percentage': 'Percentage'},
-    color_discrete_sequence=color_theme  # Apply the color theme
-)
+    total_device_id = filtered_partner_df['device_id'].sum()
+    filtered_partner_df['percentage'] = filtered_partner_df['device_id'] / total_device_id * 100
 
-# Customize hover template to display total device_id and percentage
-fig4.update_traces(
-    textinfo='percent',            # Show percentages on the pie chart
-    hovertemplate='<b>%{label}</b><br>Total Devices: %{value}<br>Percentage: %{percent}'
-)
+    # define color theme for chart
+    color_theme = px.colors.qualitative.Set3
+
+    # Create the Pie Chart
+    fig4 = px.pie(
+        filtered_partner_df,
+        names='marketing_partner',      # Labels
+        values='device_id',             # Values
+        title='Total Users by Marketing Partner',
+        hover_data={'device_id': True, 'percentage': True},  # Hover details
+        labels={'device_id': 'Total Users', 'percentage': 'Percentage'},
+        color_discrete_sequence=color_theme  # Apply the color theme
+    )
+
+    # Customize hover template to display total device_id and percentage
+    fig4.update_traces(
+        textinfo='percent',            # Show percentages on the pie chart
+        hovertemplate='<b>%{label}</b><br>Total Devices: %{value}<br>Percentage: %{percent}'
+    )
 
 
 ##############################################
