@@ -10,7 +10,7 @@ import matplotlib.ticker as mtick
 # load files for dashboard #
 ############################
 totals = pd.read_csv('data/totals.csv')
-# df_imp_evnt_agg = pd.read_csv('/data/install_event_binned_users.csv')
+# df_imp_evnt_agg = pd.read_csv('data/install_event_binned_users.csv')
 date_diff_totals = pd.read_csv('data/install_event_binned_date.csv')
 partners = pd.read_csv('data/marketing_partners_users.csv')
 states = pd.read_csv('data/states_totals.csv')
