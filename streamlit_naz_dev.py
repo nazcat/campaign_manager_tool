@@ -90,7 +90,6 @@ else:
 #########################################
 # [Visual 1] Users by Marketing Partner #
 #########################################
-
 if start_date > end_date:
     st.sidebar.error("Start date must be before end date.")
 
@@ -112,7 +111,7 @@ else:
         filtered_partner_df,
         names='marketing_partner',      # Labels
         values='device_id',             # Values
-        title='Total Users by Marketing Partner',
+        title='Users by Marketing Partner',
         hover_data={'device_id': True, 'percentage': True},  # Hover details
         labels={'device_id': 'Total Users', 'percentage': 'Percentage'},
         color_discrete_sequence=color_theme  # Apply the color theme
