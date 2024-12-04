@@ -209,7 +209,7 @@ fig3.update_traces(marker_opacity=states['opacity'])
 fig3.update_layout(coloraxis_colorbar={"title": ""})
 
 # Display the chart and aggregated metric
-st.sidebar.metric(label=f"Total {selected_metric.replace('_', ' ').title()}", value=metric_sum)
+st.sidebar.metric(label=f"Total {selected_metric.replace('_', ' ').title()} by selected state(s)", value=metric_sum)
 
 
 ############################
