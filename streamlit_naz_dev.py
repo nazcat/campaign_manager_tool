@@ -26,10 +26,6 @@ st.set_page_config(layout='wide', initial_sidebar_state='expanded')
     
 st.sidebar.header('`Campaign Performance`')
 
-# add multi select state filter
-st.sidebar.subheader('Choose State')
-state_select = st.sidebar.multiselect("Select State", ["All"] + states['state'].tolist())
-
 # add date filter
 st.sidebar.subheader('Streaming Dates')
 start_date = st.sidebar.date_input("Start Date", value=min(pd.to_datetime(totals['event_date'])))
