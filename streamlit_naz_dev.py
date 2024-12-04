@@ -181,9 +181,9 @@ else:
 
 # Calculate aggregated metric for selected states
 if selected_metric == 'minutes_per_user':
-    metric_sum = filtered_df[selected_metric].mean()
+    metric_sum = round(filtered_df[selected_metric].mean(),0)
 else:
-    metric_sum = filtered_df[selected_metric].sum()
+    metric_sum = round(filtered_df[selected_metric].sum(),0)
 
 # Add greyed-out opacity for unselected states
 states['opacity'] = states['state'].apply(lambda x: 1 if x in state_select else 0.2)
