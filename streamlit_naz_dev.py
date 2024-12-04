@@ -211,6 +211,9 @@ fig3.update_traces(marker_opacity=states['opacity'])
 # Update layout (remove colorbar title)
 fig3.update_layout(coloraxis_colorbar={"title": ""})
 
+# Remove color bar
+fig3.update_layout(coloraxis_showscale=False)
+
 # Display the chart and aggregated metric
 st.sidebar.metric(label=f"Total {selected_metric.replace('_', ' ').title()} by Selected State(s)", value=metric_sum)
 
