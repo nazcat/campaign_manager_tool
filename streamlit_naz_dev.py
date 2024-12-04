@@ -16,9 +16,9 @@ partners = pd.read_csv('data/marketing_partners_users.csv')
 states = pd.read_csv('data/states_totals.csv')
 
 
-###############################
-# Streamlit Setup and Sidebar #
-###############################
+#####################################
+# Streamlit Setup and Sidebar Start #
+#####################################
 st.set_page_config(layout='wide', initial_sidebar_state='expanded')
 
 # with open('style.css') as f:
@@ -26,23 +26,14 @@ st.set_page_config(layout='wide', initial_sidebar_state='expanded')
     
 st.sidebar.header('`Campaign Performance`')
 
-# st.sidebar.subheader('Choose your marketing partner')
-# partner_select = st.sidebar.selectbox('Color by', ('marketing_partner')) 
+# add multi select state filter
+st.sidebar.subheader('Choose State')
+state_select = st.sidebar.multiselect("Select State", ["All"] + states['state'].tolist())
 
-# st.sidebar.subheader('Choose your campaign')
-# campaign_select = st.sidebar.selectbox('Select data', ('creative_name'))
-
-st.sidebar.subheader('State')
-state_select = st.sidebar.selectbox('Select state(s)', (states['state']))
-
+# add date filter
 st.sidebar.subheader('Streaming Dates')
 start_date = st.sidebar.date_input("Start Date", value=min(pd.to_datetime(totals['event_date'])))
 end_date = st.sidebar.date_input("End Date", value=max(pd.to_datetime(totals['event_date'])))                               
-
-st.sidebar.markdown('''
----
-Created with ❤️ by Plutonians.
-''')
 
 
 #######################################
@@ -171,56 +162,54 @@ else:
 ##############################################################
 # [Visual 3] Total Users or Average Minutes Watched by State #
 ##############################################################
-# Initialize figure with the first metric
+# add multi select state filter
+st.sidebar.subheader('Choose State')
+state_select = st.sidebar.multiselect("Select States", options=states['state'].tolist(), default=states['state'].tolist())
+
+st.sidebar.subheader('Choose Metric')
 metric_options = ['users', 'minutes', 'impressions', 'clicks', 'minutes_per_user']
-initial_metric = metric_options[0]
+selected_metric = st.sidebar.selectbox("Select Metric", options=metric_options)
 
+# # Initialize figure with the first metric
+# metric_options = ['users', 'minutes', 'impressions', 'clicks', 'minutes_per_user']
+# initial_metric = metric_options[0]
+
+# Filter data for selected states
+if state_select:
+    filtered_df = states[states['state'].isin(state_select)].copy()
+    filtered_df['opacity'] = 1  # Selected states full opacity
+
+else:
+    filtered_df = states.copy()
+    filtered_df['opacity'] = 1  # No states selected, all visible
+
+# Calculate aggregated metric for selected states
+metric_sum = filtered_df[selected_metric].sum()
+
+# Add greyed-out opacity for unselected states
+states['opacity'] = states['state'].apply(lambda x: 1 if x in state_select else 0.2)
+
+# Create the Choropleth Map
 fig3 = px.choropleth(
-    states,
-    locations='state',
-    locationmode='USA-states',
-    color=initial_metric,
-    hover_name='state',
-    hover_data={initial_metric: True},
-    color_continuous_scale='Viridis',
-    title=f"{initial_metric.replace('_', ' ').title()} by State",
-    scope='usa'
+    filtered_df,
+    locations="state",
+    locationmode="USA-states",
+    color=selected_metric,
+    hover_name="state",
+    hover_data={selected_metric: True},
+    color_continuous_scale="Viridis",
+    scope="usa",
+    title=f"{selected_metric.replace('_', ' ').title()} by State",
 )
 
-# Add dropdown menu
-dropdown_buttons = [
-    {
-        "label": metric.replace("_", " ").title(),
-        "method": "update",
-        "args": [
-            {
-                "z": [states[metric]],  # Update the color values
-                "hovertemplate": f"<b>%{{location}}</b><br>{metric.replace('_', ' ').title()}: %{{z}}<extra></extra>",  # Update hover
-            },
-            {
-                "title": f"{metric.replace('_', ' ').title()} by State",  # Update the chart title
-                "coloraxis_colorbar": {"title": ""}  # Remove color axis title
-            }
-        ]
-    }
-    for metric in metric_options
-]
+# Adjust opacity for greyed-out states
+fig3.update_traces(marker_opacity=states['opacity'])
 
-# Add dropdown to the layout
-fig3.update_layout(
-    updatemenus=[
-        {
-            "buttons": dropdown_buttons,
-            "direction": "down",
-            "showactive": True,
-            "x": 0.1,
-            "xanchor": "left",
-            "y": 1.15,
-            "yanchor": "top",
-        }
-    ],
-    coloraxis_colorbar={"title": ""},  # Initial color axis label
-)
+# Update layout (remove colorbar title)
+fig3.update_layout(coloraxis_colorbar={"title": ""})
+
+# Display the chart and aggregated metric
+st.sidebar.metric(label=f"Total {selected_metric.replace('_', ' ').title()}", value=metric_sum)
 
 
 ############################
@@ -238,3 +227,12 @@ with col2:
 col1, col2, col3 = st.columns((3,3,3))
 with col1:
     st.pyplot(fig2)
+
+
+#########################
+# Streamlit Sidebar End #
+#########################
+st.sidebar.markdown('''
+---
+Created with ❤️ by Plutonians.
+''')
