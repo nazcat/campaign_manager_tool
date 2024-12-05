@@ -132,7 +132,7 @@ else:
 
     fig2 = plt.figure(figsize=(6, 4))
 
-    bars = plt.bar(df_imp_evnt_agg['imp_evnt_binned'], df_imp_evnt_agg['device_id'], color='#00274C') # '#00274C','#FFCB05'
+    bars = plt.bar(df_imp_evnt_agg['imp_evnt_binned'], df_imp_evnt_agg['device_id']) # '#00274C','#FFCB05'
     for bar in bars:
         yval = bar.get_height()
         plt.annotate(f'{int(yval/1000)}K',
