@@ -142,7 +142,7 @@ else:
                      ha='center', va='bottom')
 
     # plot average
-    plt.axhline(y=df_imp_evnt_agg['device_id'].mean(), color='#FFCB05', ls='--', label='Average') # '#00274C','#FFCB05'
+    plt.axhline(y=df_imp_evnt_agg['device_id'].mean(), ls='--', label='Average') # '#00274C','#FFCB05'
 
     plt.ylabel('Total Users',fontsize=10)
     plt.xlabel('Days', fontsize=10)
