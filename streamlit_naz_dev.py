@@ -279,7 +279,8 @@ else:
          }).round(1).reset_index()
 
     # rename columns for visuals
-
+    filtered_genre_agg = filtered_genre_agg.rename(columns={'content_genre':'Genre'})
+    
     # Bar Chart
     fig4 = px.bar(
         filtered_genre_agg,
