@@ -12,6 +12,25 @@ import matplotlib.ticker as mtick
 totals = pd.read_csv('data/totals.csv')
 totals_genre = pd.read_csv('data/totals_genre.csv')
 
+# rename columns for visuals
+totals = totals.rename(
+    columns={
+    'users': 'Users',
+    'minutes': 'Minutes',
+    'impressions': 'Impressions',
+    'clicks': 'Clicks',
+    'minutes_per_user': 'Minutes per User'
+    })
+
+# rename columns for visuals
+totals_genre = totals_genre.rename(
+    columns={
+    'users': 'Users',
+    'minutes': 'Minutes',
+    'impressions': 'Impressions',
+    'clicks': 'Clicks',
+    'minutes_per_user': 'Minutes per User'
+    })
 
 #####################################
 # Streamlit Setup and Sidebar Start #
@@ -56,7 +75,7 @@ else:
         default=["MI"] if "MI" in all_states else []
     )
 
-metric_options = ['users', 'minutes', 'impressions', 'clicks', 'minutes_per_user']
+metric_options = ['Users', 'Minutes', 'Impressions', 'Clicks', 'Minutes per User']
 metric_select = st.sidebar.selectbox("Select Metric", options=metric_options)
 
 
@@ -91,11 +110,11 @@ else:
     filtered_df = totals[(pd.to_datetime(totals['event_date']) >= pd.to_datetime(start_date)) & (pd.to_datetime(totals['event_date']) <= pd.to_datetime(end_date)) & (totals['state'].isin(state_select)) & (totals['campaign_name'].isin(campaign_select))]
  
     # top four metrics
-    devices = format_number(filtered_df['users'].sum())
-    minutes = format_number(filtered_df['minutes'].sum())
-    impressions = format_number(filtered_df['impressions'].sum())
-    clicks = format_number(filtered_df['clicks'].sum())
-    mpu = format_number(filtered_df['minutes_per_user'].mean())
+    devices = format_number(filtered_df['Users'].sum())
+    minutes = format_number(filtered_df['Minutes'].sum())
+    impressions = format_number(filtered_df['Impressions'].sum())
+    clicks = format_number(filtered_df['Clicks'].sum())
+    mpu = format_number(filtered_df['Minutes per User'].mean())
     
     # update dashboard
     st.subheader('Totals')
@@ -119,10 +138,10 @@ else:
     filtered_partner_df = totals[(pd.to_datetime(totals['event_date']) >= pd.to_datetime(start_date)) & (pd.to_datetime(totals['event_date']) <= pd.to_datetime(end_date)) & (totals['state'].isin(state_select)) & (totals['campaign_name'].isin(campaign_select))]
 
     labels = filtered_partner_df['marketing_partner']
-    sizes = filtered_partner_df['users']
+    sizes = filtered_partner_df['Users']
 
-    total_device_id = filtered_partner_df['users'].sum()
-    filtered_partner_df['percentage'] = filtered_partner_df['users'] / total_device_id * 100
+    total_device_id = filtered_partner_df['Users'].sum()
+    filtered_partner_df['percentage'] = filtered_partner_df['Users'] / total_device_id * 100
 
     # define color theme for chart
     color_theme = px.colors.qualitative.Set3
@@ -131,10 +150,10 @@ else:
     fig1 = px.pie(
         filtered_partner_df,
         names='marketing_partner',      # Labels
-        values='users',             # Values
+        values='Users',             # Values
         # title='Users by Marketing Partner',
-        hover_data={'users': True, 'percentage': True},  # Hover details
-        labels={'users': 'Total Users', 'percentage': 'Percentage'},
+        hover_data={'Users': True, 'percentage': True},  # Hover details
+        labels={'Users': 'Total Users', 'percentage': 'Percentage'},
         color_discrete_sequence=color_theme  # Apply the color theme
     )
 
@@ -156,11 +175,11 @@ else:
     # Filter DataFrame by selected dates
     filtered_date_diff_df = totals[(pd.to_datetime(totals['event_date']) >= pd.to_datetime(start_date)) & (pd.to_datetime(totals['event_date']) <= pd.to_datetime(end_date)) & (totals['state'].isin(state_select)) & (totals['campaign_name'].isin(campaign_select))]
 
-    df_imp_evnt_agg = filtered_date_diff_df.groupby('imp_evnt_binned')['users'].sum().reset_index()
+    df_imp_evnt_agg = filtered_date_diff_df.groupby('imp_evnt_binned')['Users'].sum().reset_index()
 
     fig2 = plt.figure(figsize=(10, 6))
 
-    bars = plt.bar(df_imp_evnt_agg['imp_evnt_binned'], df_imp_evnt_agg['users']) # '#00274C','#FFCB05'
+    bars = plt.bar(df_imp_evnt_agg['imp_evnt_binned'], df_imp_evnt_agg['Users']) # '#00274C','#FFCB05'
     for bar in bars:
         yval = bar.get_height()
         plt.annotate(f'{int(yval/1000)}K',
@@ -170,7 +189,7 @@ else:
                      ha='center', va='bottom')
 
     # plot average
-    plt.axhline(y=df_imp_evnt_agg['users'].mean(), ls='--', label='Average') # '#00274C','#FFCB05'
+    plt.axhline(y=df_imp_evnt_agg['Users'].mean(), ls='--', color='#FFCB05', label='Average') # '#00274C','#FFCB05'
 
     # format plot
     plt.box(False)
@@ -178,7 +197,7 @@ else:
     plt.xlabel('Days', fontsize=10)
 
     # Set the y limits making the maximum 10% greater
-    ymin, ymax = min(df_imp_evnt_agg['users']), max(df_imp_evnt_agg['users'])
+    ymin, ymax = min(df_imp_evnt_agg['Users']), max(df_imp_evnt_agg['Users'])
     plt.ylim(ymin, 1.1 * ymax)
     plt.gca().yaxis.set_major_formatter(mtick.FuncFormatter(lambda x, _: f'{int(x/1000)}K'))
     # plt.title("Days from Campaign to Streaming")
@@ -249,19 +268,21 @@ else:
     filtered_genre_df = totals_genre[(pd.to_datetime(totals_genre['event_date']) >= pd.to_datetime(start_date)) & (pd.to_datetime(totals_genre['event_date']) <= pd.to_datetime(end_date)) & (totals_genre['state'].isin(state_select)) & (totals_genre['campaign_name'].isin(campaign_select))].copy()
 
     filtered_genre_agg = filtered_genre_df.groupby(['content_genre']).agg(
-        {'users': np.sum, 
-         'minutes': np.sum,
-         'impressions': np.sum,
-         'clicks': np.sum,
-         'minutes_per_user': np.mean}).reset_index()
+        {'Users': np.sum, 
+         'Minutes': np.sum,
+         'Impressions': np.sum,
+         'Clicks': np.sum,
+         'Minutes per User': np.mean}).reset_index()
+
+    # rename columns for visuals
 
     # Bar Chart
     fig4 = px.bar(
         filtered_genre_agg,
         x='content_genre',
-        y='users',
+        y=metric_select,
         # title="Number of Users by Genre",
-        labels={'users': 'Users', 'content_genre': 'Genre'}
+        labels={f"{metric_select}, 'content_genre': 'Genre'"}
     )
 
     fig4.update_layout(
@@ -289,7 +310,7 @@ with col2:
 # st.markdown('### Line chart')
 col1, col2 = st.columns((1,1))
 with col1:
-    st.markdown("##### Number of Users by Genre")
+    st.markdown(f"##### {metric_select} by Genre")
     st.markdown("###### For Genres >= 10 Users")
     st.plotly_chart(fig4)
 with col2:
