@@ -10,7 +10,7 @@ import matplotlib.ticker as mtick
 # load files for dashboard #
 ############################
 totals = pd.read_csv('data/totals.csv')
-totals = pd.read_csv('data/totals_genre.csv')
+totals_genre = pd.read_csv('data/totals_genre.csv')
 
 
 #####################################
