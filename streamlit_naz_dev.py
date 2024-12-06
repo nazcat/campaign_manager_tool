@@ -177,18 +177,24 @@ else:
 # [Visual 2] Days from Campaign to Streaming #
 ##############################################
 # Apply date filters from sidebar selection
-if start_date > end_date:
-    st.sidebar.error("Start date must be before end date.")
+if select_all_states:
+    filtered_map_df = totals.copy()
 
 else:
     # Filter DataFrame by selected dates
     filtered_date_diff_df = totals[(pd.to_datetime(totals['event_date']) >= pd.to_datetime(start_date)) & (pd.to_datetime(totals['event_date']) <= pd.to_datetime(end_date)) & (totals['state'].isin(state_select)) & (totals['campaign_name'].isin(campaign_select))]
 
-    df_imp_evnt_agg = filtered_date_diff_df.groupby('imp_evnt_binned')['Users'].sum().reset_index()
-
+    df_imp_evnt_agg = filtered_date_diff_df.groupby('imp_evnt_binned').agg(
+        {'Users': np.sum, 
+         'Minutes': np.sum,
+         'Impressions': np.sum,
+         'Clicks': np.sum,
+         'Minutes per User': np.mean
+         }).round(1).reset_index()
+    
     fig2 = plt.figure(figsize=(10, 6))
 
-    bars = plt.bar(df_imp_evnt_agg['imp_evnt_binned'], df_imp_evnt_agg['Users']) # '#00274C','#FFCB05'
+    bars = plt.bar(df_imp_evnt_agg['imp_evnt_binned'], df_imp_evnt_agg[metric_select]) # '#00274C','#FFCB05'
     for bar in bars:
         yval = bar.get_height()
         plt.annotate(f'{int(yval/1000)}K',
@@ -197,20 +203,21 @@ else:
                      textcoords='offset points',
                      ha='center', va='bottom')
 
+    avg = df_imp_evnt_agg[metric_select].mean()
+    
     # plot average
-    avg = df_imp_evnt_agg['Users'].mean()
     plt.axhline(y=avg, ls='--', color='#FFCB05', label='Average') # '#00274C','#FFCB05'
 
     # annotate average line
     plt.annotate(f'Avg: {avg:.1f}', xy=(bar.get_x(), avg), xytext=(bar.get_x() + 1, avg + 50))
-    
+
     # format plot
     plt.box(False)
-    plt.ylabel('Total Users',fontsize=10)
+    plt.ylabel(f"Total {metric_select}",fontsize=10)
     plt.xlabel('Days', fontsize=10)
 
     # Set the y limits making the maximum 10% greater
-    ymin, ymax = min(df_imp_evnt_agg['Users']), max(df_imp_evnt_agg['Users'])
+    ymin, ymax = min(df_imp_evnt_agg[metric_select]), max(df_imp_evnt_agg[metric_select])
     plt.ylim(ymin, 1.1 * ymax)
     plt.gca().yaxis.set_major_formatter(mtick.FuncFormatter(lambda x, _: f'{int(x/1000)}K'))
     # plt.title("Days from Campaign to Streaming")
