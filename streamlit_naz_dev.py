@@ -319,6 +319,14 @@ with col2:
 
 # # Row 3
 # Add downloadable campaign crosstab
+filtered_genre_df = filtered_genre_df.rename(
+    columns={
+    'event_date': 'Watch Date',
+    'campaign_name': 'Campaign',
+    'content_genre': 'Genre',
+    'state': 'State',
+    })
+
 st.markdown("##### Genres by Campaign(s)")
 st.markdown("###### For Genres >= 10 Users")
 st.dataframe(filtered_genre_df)
