@@ -40,16 +40,16 @@ st.set_page_config(layout='wide', initial_sidebar_state='expanded')
 
 # with open('style.css') as f:
 #     st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
-    
-st.sidebar.header('Campaign Performance')
+
+st.sidebar.header('')
 
 # add date filter
-st.sidebar.subheader('Streaming Dates')
+st.sidebar.markdown('## Streaming Dates')
 start_date = st.sidebar.date_input("Start Date", value=min(pd.to_datetime(totals['event_date'])))
 end_date = st.sidebar.date_input("End Date", value=max(pd.to_datetime(totals['event_date'])))                               
 
 # add multi select state filter
-st.sidebar.subheader('Campaign')
+st.sidebar.markdown('## Choose Campaign')
 all_campaigns = totals['campaign_name'].unique()
 select_all_campaigns = st.sidebar.checkbox("Select All Campaigns", value=False)
 
@@ -63,7 +63,7 @@ else:
     )
     
 # add multi select state filter
-st.sidebar.subheader('Choose State')
+st.sidebar.markdown('## Choose State')
 all_states = totals['state'].unique()
 select_all_states = st.sidebar.checkbox("Select All States", value=False)
 
