@@ -32,6 +32,7 @@ totals_genre = totals_genre.rename(
     'minutes_per_user': 'Minutes per User'
     })
 
+
 #####################################
 # Streamlit Setup and Sidebar Start #
 #####################################
@@ -143,13 +144,13 @@ else:
          'Impressions': np.sum,
          'Clicks': np.sum,
          'Minutes per User': np.mean
-         }).reset_index()
+         }).round(1).reset_index()
 
     labels = filtered_partner_agg['marketing_partner']
     sizes = filtered_partner_agg[metric_select]
 
     total_metric = filtered_partner_agg[metric_select].sum()
-    filtered_partner_agg['percentage'] = filtered_partner_agg[metric_select] / total_metric * 100
+    filtered_partner_agg['percentage'] = round((filtered_partner_agg[metric_select] / total_metric * 100),1)
 
     # define color theme for chart
     color_theme = px.colors.qualitative.Set3
@@ -230,21 +231,8 @@ else:
          'Impressions': np.sum,
          'Clicks': np.sum,
          'Minutes per User': np.mean
-         }).reset_index()
+         }).round(1).reset_index()
 
-    # Choropleth version
-    # fig3 = px.choropleth(
-    #     filtered_map_df,
-    #     locations="state",
-    #     locationmode="USA-states",
-    #     color=metric_select,
-    #     hover_name="state",
-    #     hover_data={metric_select: True},
-    #     color_continuous_scale="Viridis",
-    #     scope="usa",
-    #     title=f"{metric_select.replace('_', ' ').title()} by State"
-    # )
-    
     # scatter geo version
     fig3 = px.scatter_geo(
         filtered_map_agg,
@@ -283,7 +271,8 @@ else:
          'Minutes': np.sum,
          'Impressions': np.sum,
          'Clicks': np.sum,
-         'Minutes per User': np.mean}).reset_index()
+         'Minutes per User': np.mean
+         }).round(1).reset_index()
 
     # rename columns for visuals
 
