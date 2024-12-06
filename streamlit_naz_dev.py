@@ -137,30 +137,38 @@ else:
     # Filter DataFrame by selected dates
     filtered_partner_df = totals[(pd.to_datetime(totals['event_date']) >= pd.to_datetime(start_date)) & (pd.to_datetime(totals['event_date']) <= pd.to_datetime(end_date)) & (totals['state'].isin(state_select)) & (totals['campaign_name'].isin(campaign_select))]
 
-    labels = filtered_partner_df['marketing_partner']
-    sizes = filtered_partner_df['Users']
+    filtered_partner_agg = filtered_partner_df.groupby(['marketing_partner']).agg(
+        {'Users': np.sum, 
+         'Minutes': np.sum,
+         'Impressions': np.sum,
+         'Clicks': np.sum,
+         'Minutes per User': np.mean
+         }).reset_index()
 
-    total_device_id = filtered_partner_df['Users'].sum()
-    filtered_partner_df['percentage'] = filtered_partner_df['Users'] / total_device_id * 100
+    labels = filtered_partner_agg['marketing_partner']
+    sizes = filtered_partner_agg[metric_select]
+
+    total_metric = filtered_partner_agg[metric_select].sum()
+    filtered_partner_agg['percentage'] = filtered_partner_agg[metric_select] / total_metric * 100
 
     # define color theme for chart
     color_theme = px.colors.qualitative.Set3
 
     # Create the Pie Chart
     fig1 = px.pie(
-        filtered_partner_df,
-        names='marketing_partner',      # Labels
-        values='Users',             # Values
+        filtered_partner_agg,
+        names='marketing_partner',    
+        values=metric_select,            
         # title='Users by Marketing Partner',
-        hover_data={'Users': True, 'percentage': True},  # Hover details
-        labels={'Users': 'Total Users', 'percentage': 'Percentage'},
+        hover_data={metric_select: True, 'percentage': True},  # Hover details
+        # labels={f"{metric_select}, 'percentage': 'Percentage'"},
         color_discrete_sequence=color_theme  # Apply the color theme
     )
 
     # Customize hover template to display total device_id and percentage
     fig1.update_traces(
         textinfo='percent',            # Show percentages on the pie chart
-        hovertemplate='<b>%{label}</b><br>Total Devices: %{value}<br>Percentage: %{percent}'
+        hovertemplate='<b>%{label}</b><br>Total: %{value}<br>Percentage: %{percent}'
     )
 
 
@@ -216,11 +224,13 @@ if select_all_states:
 else:
     filtered_map_df = totals[(pd.to_datetime(totals['event_date']) >= pd.to_datetime(start_date)) & (pd.to_datetime(totals['event_date']) <= pd.to_datetime(end_date)) & (totals['state'].isin(state_select)) & (totals['campaign_name'].isin(campaign_select))].copy()
 
-    # Calculate aggregated metric for selected states
-    if metric_select == 'minutes_per_user':
-        metric_sum = round(filtered_map_df[metric_select].mean(),0)
-    else:
-        metric_sum = round(filtered_map_df[metric_select].sum(),0)
+    filtered_map_agg = filtered_map_df.groupby(['state','latitude','longitude']).agg(
+        {'Users': np.sum, 
+         'Minutes': np.sum,
+         'Impressions': np.sum,
+         'Clicks': np.sum,
+         'Minutes per User': np.mean
+         }).reset_index()
 
     # Choropleth version
     # fig3 = px.choropleth(
@@ -237,7 +247,7 @@ else:
     
     # scatter geo version
     fig3 = px.scatter_geo(
-        filtered_map_df,
+        filtered_map_agg,
         lat="latitude",
         lon="longitude",
         size=metric_select,
@@ -254,7 +264,8 @@ else:
     fig3.update_layout(coloraxis_showscale=False)
 
     # Display the chart and aggregated metric
-    st.sidebar.metric(label=f"Total {metric_select.replace('_', ' ').title()} by Selected States(s)", value=metric_sum)
+    # metric_sum = round(filtered_map_agg[metric_select],1)
+    # st.sidebar.metric(label=f"Total {metric_select.replace('_', ' ').title()} by Selected States(s)", value=filtered_map_agg[metric_select])
 
 
 ##############################
@@ -303,7 +314,7 @@ with col1:
     st.markdown(f"##### {metric_select.replace('_', ' ').title()} by State")
     st.plotly_chart(fig3)
 with col2:
-    st.markdown('##### Users by Marketing Partner')
+    st.markdown(f'##### {metric_select} by Marketing Partner')
     st.plotly_chart(fig1)
     
 # # Row 2
@@ -319,6 +330,7 @@ with col2:
 
 # # Row 3
 # Add downloadable campaign crosstab
+# rename columns for visuals
 filtered_genre_df = filtered_genre_df.rename(
     columns={
     'event_date': 'Watch Date',
