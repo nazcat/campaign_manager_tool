@@ -249,7 +249,7 @@ else:
     filtered_genre_df = totals_genre[(pd.to_datetime(totals_genre['event_date']) >= pd.to_datetime(start_date)) & (pd.to_datetime(totals_genre['event_date']) <= pd.to_datetime(end_date)) & (totals_genre['state'].isin(state_select)) & (totals_genre['campaign_name'].isin(campaign_select))].copy()
 
     filtered_genre_agg = filtered_genre_df.groupby(['content_genre']).agg(
-        {'users': pd.Series.nunique, 
+        {'users': np.sum, 
          'minutes': np.sum,
          'impressions': np.sum,
          'clicks': np.sum,
