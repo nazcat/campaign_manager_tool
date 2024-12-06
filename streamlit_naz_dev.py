@@ -284,10 +284,10 @@ else:
     # Bar Chart
     fig4 = px.bar(
         filtered_genre_agg,
-        x='content_genre',
+        x='Genre',
         y=metric_select,
         # title="Number of Users by Genre",
-        labels={f"{metric_select}, 'content_genre': 'Genre'"}
+        labels={f"{metric_select}, 'Genre'"}
     )
 
     fig4.update_layout(
