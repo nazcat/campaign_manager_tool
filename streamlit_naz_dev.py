@@ -198,8 +198,12 @@ else:
                      ha='center', va='bottom')
 
     # plot average
-    plt.axhline(y=df_imp_evnt_agg['Users'].mean(), ls='--', color='#FFCB05', label='Average') # '#00274C','#FFCB05'
+    avg = df_imp_evnt_agg['Users'].mean()
+    plt.axhline(y=avg, ls='--', color='#FFCB05', label='Average') # '#00274C','#FFCB05'
 
+    # annotate average line
+    plt.annotate(f'Avg: {avg:.1f}', xy=(bar.get_x(), avg), xytext=(bar.get_x() + 1, avg + 50))
+    
     # format plot
     plt.box(False)
     plt.ylabel('Total Users',fontsize=10)
