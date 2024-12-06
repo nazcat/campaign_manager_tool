@@ -16,6 +16,13 @@ partners = pd.read_csv('data/marketing_partners_users.csv')
 states = pd.read_csv('data/states_totals.csv')
 
 
+###########################
+# load files for dashboard #
+############################
+totals = pd.read_csv('//Users//nuremek//Documents//MADS//SIADS699//totals.csv')
+totals_genre = pd.read_csv('//Users//nuremek//Documents//MADS//SIADS699//totals_genre.csv')
+
+
 #####################################
 # Streamlit Setup and Sidebar Start #
 #####################################
@@ -30,6 +37,37 @@ st.sidebar.header('Campaign Performance')
 st.sidebar.subheader('Streaming Dates')
 start_date = st.sidebar.date_input("Start Date", value=min(pd.to_datetime(totals['event_date'])))
 end_date = st.sidebar.date_input("End Date", value=max(pd.to_datetime(totals['event_date'])))                               
+
+# add multi select state filter
+st.sidebar.subheader('Campaign')
+all_campaigns = totals['campaign_name'].unique()
+select_all_campaigns = st.sidebar.checkbox("Select All Campaigns", value=False)
+
+if select_all_campaigns:
+    campaign_select = all_campaigns
+else:
+    campaign_select = st.sidebar.multiselect(
+        "Select State(s)", 
+        options=all_campaigns, 
+        default=["campaign_name_1"] if "campaign_name_1" in all_campaigns else []
+    )
+    
+# add multi select state filter
+st.sidebar.subheader('Choose State')
+all_states = totals['state'].unique()
+select_all_states = st.sidebar.checkbox("Select All States", value=False)
+
+if select_all_states:
+    state_select = all_states
+else:
+    state_select = st.sidebar.multiselect(
+        "Select State(s)", 
+        options=all_states, 
+        default=["MI"] if "MI" in all_states else []
+    )
+
+metric_options = ['users', 'minutes', 'impressions', 'clicks', 'minutes_per_user']
+metric_select = st.sidebar.selectbox("Select Metric", options=metric_options)
 
 
 #######################################
@@ -46,8 +84,13 @@ def format_number(num):
         if not num % 1000000:
             return f'{num // 1000000} M'
         return f'{round(num / 1000000, 1)} M'
-    
-    return f'{num // 1000} K'
+
+    elif num > 1000:
+        if not num % 1000:
+            return f'{num // 1000} K'
+        return f'{round(num / 1000, 1)} K'
+
+    return f'{round(num,1)}'
 
 # Apply date filters from sidebar selection
 if start_date > end_date:
@@ -55,8 +98,8 @@ if start_date > end_date:
 
 else:
     # Filter DataFrame by selected dates
-    filtered_df = totals[(pd.to_datetime(totals['event_date']) >= pd.to_datetime(start_date)) & (pd.to_datetime(totals['event_date']) <= pd.to_datetime(end_date))]
-
+    filtered_df = totals[(pd.to_datetime(totals['event_date']) >= pd.to_datetime(start_date)) & (pd.to_datetime(totals['event_date']) <= pd.to_datetime(end_date)) & (totals['state'].isin(state_select)) & (totals['campaign_name'].isin(campaign_select))]
+ 
     # top four metrics
     devices = format_number(filtered_df['users'].sum())
     minutes = format_number(filtered_df['minutes'].sum())
@@ -65,14 +108,14 @@ else:
     mpu = format_number(filtered_df['minutes_per_user'].mean())
     
     # update dashboard
-    st.markdown('### Totals')
+    st.subheader('Totals')
     col1, col2, col3, col4, col5 = st.columns(5)
 
-    col1.metric("Users", devices) #, "1.2 °F")
-    col2.metric("Minutes Watched", minutes) #, "-8%")
-    col3.metric("Ad Impressions", impressions) #, "4%")
-    col4.metric("Ad Clicks", clicks) # "4%")
-    col5.metric("Minutes per User", mpu) # "4%")
+    col1.metric("Users", devices)
+    col2.metric("Minutes Watched", minutes)
+    col3.metric("Ad Impressions", impressions)
+    col4.metric("Ad Clicks", clicks)
+    col5.metric("Minutes per User", mpu)
 
 
 #########################################
@@ -83,13 +126,13 @@ if start_date > end_date:
 
 else:
     # Filter DataFrame by selected dates
-    filtered_partner_df = partners[(pd.to_datetime(partners['event_date']) >= pd.to_datetime(start_date)) & (pd.to_datetime(partners['event_date']) <= pd.to_datetime(end_date))]
+    filtered_partner_df = totals[(pd.to_datetime(totals['event_date']) >= pd.to_datetime(start_date)) & (pd.to_datetime(totals['event_date']) <= pd.to_datetime(end_date)) & (totals['state'].isin(state_select)) & (totals['campaign_name'].isin(campaign_select))]
 
     labels = filtered_partner_df['marketing_partner']
-    sizes = filtered_partner_df['device_id']
+    sizes = filtered_partner_df['users']
 
-    total_device_id = filtered_partner_df['device_id'].sum()
-    filtered_partner_df['percentage'] = filtered_partner_df['device_id'] / total_device_id * 100
+    total_device_id = filtered_partner_df['users'].sum()
+    filtered_partner_df['percentage'] = filtered_partner_df['users'] / total_device_id * 100
 
     # define color theme for chart
     color_theme = px.colors.qualitative.Set3
@@ -98,10 +141,10 @@ else:
     fig1 = px.pie(
         filtered_partner_df,
         names='marketing_partner',      # Labels
-        values='device_id',             # Values
-        title='Users by Marketing Partner',
-        hover_data={'device_id': True, 'percentage': True},  # Hover details
-        labels={'device_id': 'Total Users', 'percentage': 'Percentage'},
+        values='users',             # Values
+        # title='Users by Marketing Partner',
+        hover_data={'users': True, 'percentage': True},  # Hover details
+        labels={'users': 'Total Users', 'percentage': 'Percentage'},
         color_discrete_sequence=color_theme  # Apply the color theme
     )
 
@@ -115,24 +158,19 @@ else:
 ##############################################
 # [Visual 2] Days from Campaign to Streaming #
 ##############################################
+# Apply date filters from sidebar selection
 if start_date > end_date:
     st.sidebar.error("Start date must be before end date.")
 
 else:
     # Filter DataFrame by selected dates
-    filtered_date_diff_df = date_diff_totals[(pd.to_datetime(date_diff_totals['event_date']) >= pd.to_datetime(start_date)) & (pd.to_datetime(date_diff_totals['event_date']) <= pd.to_datetime(end_date))]
+    filtered_date_diff_df = totals[(pd.to_datetime(totals['event_date']) >= pd.to_datetime(start_date)) & (pd.to_datetime(totals['event_date']) <= pd.to_datetime(end_date)) & (totals['state'].isin(state_select)) & (totals['campaign_name'].isin(campaign_select))]
 
-    # bin impression to event date diffs
-    imp_inst_bins = [-1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 120]
-    imp_inst_labels = ['1','2','3','4','5','6','7','8','9','10','11-120']
-    filtered_date_diff_df['imp_evnt_binned'] = pd.cut(filtered_date_diff_df['impression_event_date_diff'], bins=imp_inst_bins, labels=imp_inst_labels)
-    del filtered_date_diff_df['impression_event_date_diff']
+    df_imp_evnt_agg = filtered_date_diff_df.groupby('imp_evnt_binned')['users'].sum().reset_index()
 
-    df_imp_evnt_agg = filtered_date_diff_df.groupby('imp_evnt_binned')['device_id'].sum().reset_index()
+    fig2 = plt.figure(figsize=(10, 6))
 
-    fig2 = plt.figure(figsize=(6, 4))
-
-    bars = plt.bar(df_imp_evnt_agg['imp_evnt_binned'], df_imp_evnt_agg['device_id']) # '#00274C','#FFCB05'
+    bars = plt.bar(df_imp_evnt_agg['imp_evnt_binned'], df_imp_evnt_agg['users']) # '#00274C','#FFCB05'
     for bar in bars:
         yval = bar.get_height()
         plt.annotate(f'{int(yval/1000)}K',
@@ -142,93 +180,137 @@ else:
                      ha='center', va='bottom')
 
     # plot average
-    plt.axhline(y=df_imp_evnt_agg['device_id'].mean(), ls='--', label='Average') # '#00274C','#FFCB05'
+    plt.axhline(y=df_imp_evnt_agg['users'].mean(), ls='--', label='Average') # '#00274C','#FFCB05'
 
+    # format plot
+    plt.box(False)
     plt.ylabel('Total Users',fontsize=10)
     plt.xlabel('Days', fontsize=10)
 
     # Set the y limits making the maximum 10% greater
-    ymin, ymax = min(df_imp_evnt_agg['device_id']), max(df_imp_evnt_agg['device_id'])
+    ymin, ymax = min(df_imp_evnt_agg['users']), max(df_imp_evnt_agg['users'])
     plt.ylim(ymin, 1.1 * ymax)
     plt.gca().yaxis.set_major_formatter(mtick.FuncFormatter(lambda x, _: f'{int(x/1000)}K'))
-    plt.title("Days from Campaign to Streaming")
-    plt.xticks(rotation=45)
+    # plt.title("Days from Campaign to Streaming")
+
+    # Remove x and y tick lines
+    plt.tick_params(axis='both', which='both', length=0)
 
 
 ##############################################################
 # [Visual 3] Total Users or Average Minutes Watched by State #
 ##############################################################
-# add multi select state filter
-st.sidebar.subheader('Choose State')
-state_select = st.sidebar.multiselect("Select States", options=states['state'].tolist(), default=states['state'].tolist())
-
-st.sidebar.subheader('Choose Metric')
-metric_options = ['users', 'minutes', 'impressions', 'clicks', 'minutes_per_user']
-selected_metric = st.sidebar.selectbox("Select Metric", options=metric_options)
-
-# # Initialize figure with the first metric
-# metric_options = ['users', 'minutes', 'impressions', 'clicks', 'minutes_per_user']
-# initial_metric = metric_options[0]
-
 # Filter data for selected states
-if state_select:
-    filtered_df = states[states['state'].isin(state_select)].copy()
-    filtered_df['opacity'] = 1  # Selected states full opacity
+if select_all_states:
+    filtered_map_df = totals.copy()
 
 else:
-    filtered_df = states.copy()
-    filtered_df['opacity'] = 1  # No states selected, all visible
+    filtered_map_df = totals[(pd.to_datetime(totals['event_date']) >= pd.to_datetime(start_date)) & (pd.to_datetime(totals['event_date']) <= pd.to_datetime(end_date)) & (totals['state'].isin(state_select)) & (totals['campaign_name'].isin(campaign_select))].copy()
 
-# Calculate aggregated metric for selected states
-if selected_metric == 'minutes_per_user':
-    metric_sum = round(filtered_df[selected_metric].mean(),0)
+    # Calculate aggregated metric for selected states
+    if metric_select == 'minutes_per_user':
+        metric_sum = round(filtered_map_df[metric_select].mean(),0)
+    else:
+        metric_sum = round(filtered_map_df[metric_select].sum(),0)
+
+    # Choropleth version
+    # fig3 = px.choropleth(
+    #     filtered_map_df,
+    #     locations="state",
+    #     locationmode="USA-states",
+    #     color=metric_select,
+    #     hover_name="state",
+    #     hover_data={metric_select: True},
+    #     color_continuous_scale="Viridis",
+    #     scope="usa",
+    #     title=f"{metric_select.replace('_', ' ').title()} by State"
+    # )
+    
+    # scatter geo version
+    fig3 = px.scatter_geo(
+        filtered_map_df,
+        lat="latitude",
+        lon="longitude",
+        size=metric_select,
+        color=metric_select,
+        hover_name="state",
+        hover_data={metric_select: True},
+        # title=f"{metric_select.replace('_', ' ').title()} by State"
+    )
+
+    # Update layout (remove colorbar title)
+    fig3.update_layout(coloraxis_colorbar={"title": ""})
+
+    # Remove color bar
+    fig3.update_layout(coloraxis_showscale=False)
+
+    # Display the chart and aggregated metric
+    st.sidebar.metric(label=f"Total {metric_select.replace('_', ' ').title()} by Selected States(s)", value=metric_sum)
+
+
+##############################
+# [Visual 4] Totals by Genre #
+##############################
+# Filter data based on user selections
+if select_all_states:
+    filtered_genre_df = totals_genre.copy()
+
 else:
-    metric_sum = round(filtered_df[selected_metric].sum(),0)
+    filtered_genre_df = totals_genre[(pd.to_datetime(totals_genre['event_date']) >= pd.to_datetime(start_date)) & (pd.to_datetime(totals_genre['event_date']) <= pd.to_datetime(end_date)) & (totals_genre['state'].isin(state_select)) & (totals_genre['campaign_name'].isin(campaign_select))].copy()
 
-# Add greyed-out opacity for unselected states
-states['opacity'] = states['state'].apply(lambda x: 1 if x in state_select else 0.2)
+    filtered_genre_agg = filtered_genre_df.groupby(['content_genre']).agg(
+        {'users': pd.Series.nunique, 
+         'minutes': np.sum,
+         'impressions': np.sum,
+         'clicks': np.sum,
+         'minutes_per_user': np.mean}).reset_index()
 
-# Create the Choropleth Map
-fig3 = px.choropleth(
-    filtered_df,
-    locations="state",
-    locationmode="USA-states",
-    color=selected_metric,
-    hover_name="state",
-    hover_data={selected_metric: True},
-    color_continuous_scale="Viridis",
-    scope="usa",
-    title=f"{selected_metric.replace('_', ' ').title()} by State",
-)
+    # Bar Chart
+    fig4 = px.bar(
+        filtered_genre_agg,
+        x='content_genre',
+        y='users',
+        # title="Number of Users by Genre",
+        labels={'users': 'Users', 'content_genre': 'Genre'}
+    )
 
-# Adjust opacity for greyed-out states
-fig3.update_traces(marker_opacity=states['opacity'])
-
-# Update layout (remove colorbar title)
-fig3.update_layout(coloraxis_colorbar={"title": ""})
-
-# Remove color bar
-fig3.update_layout(coloraxis_showscale=False)
-
-# Display the chart and aggregated metric
-st.sidebar.metric(label=f"Total {selected_metric.replace('_', ' ').title()} by Selected State(s)", value=metric_sum)
+    fig4.update_layout(
+        width=800, 
+        height=400,
+        xaxis=dict(
+            tickangle=-45  # Rotate x-axis labels by -45 degrees
+            )
+    )
 
 
 ############################
 # Deploy Streamlit Visuals #
 ############################
 # Row 1
-col1, col2 = st.columns((6,4))
+col1, col2 = st.columns((1,1))
 with col1:
+    st.markdown(f"##### {metric_select.replace('_', ' ').title()} by State")
     st.plotly_chart(fig3)
 with col2:
+    st.markdown('##### Users by Marketing Partner')
     st.plotly_chart(fig1)
-
+    
 # # Row 2
 # st.markdown('### Line chart')
-col1, col2, col3 = st.columns((3,3,3))
+col1, col2 = st.columns((1,1))
 with col1:
+    st.markdown("##### Number of Users by Genre")
+    st.markdown("###### For Genres >= 10 Users")
+    st.plotly_chart(fig4)
+with col2:
+    st.markdown("##### Days from Campaign to Streaming")
     st.pyplot(fig2)
+
+# # Row 3
+# Add downloadable campaign crosstab
+st.markdown("##### Genres by Campaign(s)")
+st.markdown("###### For Genres >= 10 Users")
+st.dataframe(filtered_genre_df)
 
 
 #########################
