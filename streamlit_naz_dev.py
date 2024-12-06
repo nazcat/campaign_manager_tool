@@ -118,6 +118,7 @@ else:
     mpu = format_number(filtered_df['Minutes per User'].mean())
     
     # update dashboard
+    st.header('Campaign Performance')
     st.subheader('Totals')
     col1, col2, col3, col4, col5 = st.columns(5)
 
