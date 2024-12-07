@@ -4,3 +4,4 @@ numpy
 datetime
 plotly
 matplotlib
+joblib
