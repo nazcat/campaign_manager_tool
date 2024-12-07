@@ -5,4 +5,5 @@ datetime
 plotly
 matplotlib
 joblib
-sklearn.ensemble
+sklearn
+RandomForestClassifier
