@@ -1,17 +1,46 @@
 import streamlit as st
-import pandas as pd
+import pandas as pd # version 2.0.3
 import numpy as np
-import plotly.express as px
+import plotly.express as px # version 5.15.0
+import matplotlib.pyplot as plt # version 3.7.1
+import matplotlib.ticker as mtick
 import joblib
 from sklearn.ensemble import RandomForestClassifier
+
+############################
+# load files for dashboard #
+############################
+totals = pd.read_csv('data/totals.csv')
+totals_genre = pd.read_csv('data/totals_genre.csv')
+
+# rename columns for visuals
+totals = totals.rename(
+    columns={
+    'users': 'Users',
+    'minutes': 'Minutes',
+    'impressions': 'Impressions',
+    'clicks': 'Clicks',
+    'minutes_per_user': 'Minutes per User'
+    })
+
+# rename columns for visuals
+totals_genre = totals_genre.rename(
+    columns={
+    'users': 'Users',
+    'minutes': 'Minutes',
+    'impressions': 'Impressions',
+    'clicks': 'Clicks',
+    'minutes_per_user': 'Minutes per User'
+    })
 
 # Load Datasets and Models
 @st.cache_data
 def load_data():
-    engagement_data = pd.read_csv(r'outputs/anon_processed_unique_device_v3.csv')
-    campaign_data = pd.read_csv('outputs/anan_campaign_modeling_data_v3.csv')
+    engagement_data = pd.read_csv(r'data/anon_processed_unique_device_v3.csv')
+    campaign_data = pd.read_csv('data/anan_campaign_modeling_data_v3.csv')
     return engagement_data, campaign_data
 
+# Load Models for Prediction Tools
 @st.cache_resource
 def load_models():
     reg_model = joblib.load(r'models/regression_model.pkl')
@@ -42,142 +71,351 @@ genre_columns = [
     "Telenovela", "Talk Show", "Variety Show", "War", "Young Adult", "None"
 ]
 
-# App Navigation
-st.title("Campaign Insights and Engagement Dashboard")
-st.sidebar.title("Navigation")
-menu = st.sidebar.radio("Menu", [
-    "Home", 
-    "Interactive Engagement Dashboard", 
-    "Predict Watch Time", 
-    "Predict Campaign Score",
-    "Most Similar Campaign"
-])
+#####################################
+# Streamlit Setup and Sidebar Start #
+#####################################
+#st.set_page_config(layout='wide', initial_sidebar_state='expanded')
 
-if menu == "Home":
-    st.write("Move Naz streamlit to here")
+# with open('style.css') as f:
+#     st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
-elif menu == "Interactive Engagement Dashboard":
-    st.subheader("Interactive Device Engagement Dashboard")
+st.sidebar.header('')
 
-    # Sidebar filters
-    st.sidebar.header("Filters")
-    all_states = engagement_data['state'].unique()
-    select_all_states = st.sidebar.checkbox("Select All States", value=False)
+# add date filter
+st.sidebar.markdown('## Streaming Dates')
+start_date = st.sidebar.date_input("Start Date", value=min(pd.to_datetime(totals['event_date'])))
+end_date = st.sidebar.date_input("End Date", value=max(pd.to_datetime(totals['event_date'])))                               
 
-    if select_all_states:
-        selected_states = all_states
-    else:
-        selected_states = st.sidebar.multiselect(
-            "Select State(s)", 
-            options=all_states, 
-            default=["MI"] if "MI" in all_states else []
-        )
+# add multi select state filter
+st.sidebar.markdown('## Choose Campaign')
+all_campaigns = totals['campaign_name'].unique()
+select_all_campaigns = st.sidebar.checkbox("Select All Campaigns", value=False)
 
-    campaign_id_options = ["All Campaign IDs"] + list(engagement_data['campaign_id'].unique())
-    selected_campaign_id = st.sidebar.selectbox(
-        "Select Campaign ID", 
-        options=campaign_id_options, 
-        index=campaign_id_options.index("All Campaign IDs")
+if select_all_campaigns:
+    campaign_select = all_campaigns
+else:
+    campaign_select = st.sidebar.multiselect(
+        "Select State(s)", 
+        options=all_campaigns, 
+        default=["campaign_name_1"] if "campaign_name_1" in all_campaigns else []
+    )
+    
+# add multi select state filter
+st.sidebar.markdown('## Choose State')
+all_states = totals['state'].unique()
+select_all_states = st.sidebar.checkbox("Select All States", value=False)
+
+if select_all_states:
+    state_select = all_states
+else:
+    state_select = st.sidebar.multiselect(
+        "Select State(s)", 
+        options=all_states, 
+        default=["MI"] if "MI" in all_states else []
     )
 
-    # Filter data based on user selections
-    filtered_data = engagement_data[engagement_data['state'].isin(selected_states)]
+metric_options = ['Users', 'Minutes', 'Impressions', 'Clicks', 'Minutes per User']
+metric_select = st.sidebar.selectbox("Select Metric", options=metric_options)
 
-    if selected_campaign_id != "All Campaign IDs":
-        filtered_data = filtered_data[filtered_data['campaign_id'] == selected_campaign_id]
 
-    # Metrics
-    st.metric("Total Clicks", filtered_data['clicks'].sum())
-    st.metric("Total Minutes Watched", filtered_data['total_min_watched'].sum())
-    st.metric("Number of Devices", len(filtered_data))
+#######################################
+# [Top Leve] Totals by Date Selection #
+#######################################
+# number formatter
+def format_number(num):
+    if num > 1000000000:
+        if not num % 1000000000:
+            return f'{num // 1000000000} B'
+        return f'{round(num / 1000000000, 1)} B'
+    
+    elif num > 1000000:
+        if not num % 1000000:
+            return f'{num // 1000000} M'
+        return f'{round(num / 1000000, 1)} M'
 
-    # Bar Chart
-    genre_data = filtered_data[genre_columns].astype(bool).sum().reset_index()
-    genre_data.columns = ['Genre', 'Number of Devices']
-    genre_chart = px.bar(
-        genre_data,
-        x='Genre',
-        y='Number of Devices',
-        title="Number of Devices by Genre",
-        labels={'Number of Devices': 'Devices', 'Genre': 'Content Genre'}
+    elif num > 1000:
+        if not num % 1000:
+            return f'{num // 1000} K'
+        return f'{round(num / 1000, 1)} K'
+
+    return f'{round(num,1)}'
+
+# Apply date filters from sidebar selection
+if start_date > end_date:
+    st.sidebar.error("Start date must be before end date.")
+
+else:
+    # Filter DataFrame by selected dates
+    filtered_df = totals[(pd.to_datetime(totals['event_date']) >= pd.to_datetime(start_date)) & (pd.to_datetime(totals['event_date']) <= pd.to_datetime(end_date)) & (totals['state'].isin(state_select)) & (totals['campaign_name'].isin(campaign_select))]
+ 
+    # top four metrics
+    devices = format_number(filtered_df['Users'].sum())
+    minutes = format_number(filtered_df['Minutes'].sum())
+    impressions = format_number(filtered_df['Impressions'].sum())
+    clicks = format_number(filtered_df['Clicks'].sum())
+    mpu = format_number(filtered_df['Minutes per User'].mean())
+    
+    # update dashboard
+    st.header('Campaign Performance')
+    st.subheader('Totals')
+    col1, col2, col3, col4, col5 = st.columns(5)
+
+    col1.metric("Users", devices)
+    col2.metric("Minutes Watched", minutes)
+    col3.metric("Ad Impressions", impressions)
+    col4.metric("Ad Clicks", clicks)
+    col5.metric("Minutes per User", mpu)
+
+
+#########################################
+# [Visual 1] Users by Marketing Partner #
+#########################################
+if start_date > end_date:
+    st.sidebar.error("Start date must be before end date.")
+
+else:
+    # Filter DataFrame by selected dates
+    filtered_partner_df = totals[(pd.to_datetime(totals['event_date']) >= pd.to_datetime(start_date)) & (pd.to_datetime(totals['event_date']) <= pd.to_datetime(end_date)) & (totals['state'].isin(state_select)) & (totals['campaign_name'].isin(campaign_select))]
+
+    filtered_partner_agg = filtered_partner_df.groupby(['marketing_partner']).agg(
+        {'Users': np.sum, 
+         'Minutes': np.sum,
+         'Impressions': np.sum,
+         'Clicks': np.sum,
+         'Minutes per User': np.mean
+         }).round(1).reset_index()
+
+    labels = filtered_partner_agg['marketing_partner']
+    sizes = filtered_partner_agg[metric_select]
+
+    total_metric = filtered_partner_agg[metric_select].sum()
+    filtered_partner_agg['percentage'] = round((filtered_partner_agg[metric_select] / total_metric * 100),1)
+
+    # define color theme for chart
+    color_theme = px.colors.qualitative.Set3
+
+    # Create the Pie Chart
+    fig1 = px.pie(
+        filtered_partner_agg,
+        names='marketing_partner',    
+        values=metric_select,            
+        # title='Users by Marketing Partner',
+        hover_data={metric_select: True, 'percentage': True},  # Hover details
+        # labels={f"{metric_select}, 'percentage': 'Percentage'"},
+        color_discrete_sequence=color_theme  # Apply the color theme
     )
-    st.plotly_chart(genre_chart)
 
-    # Geographic Engagement Heatmap
-    geo_map = px.scatter_geo(
-        filtered_data,
+    # Customize hover template to display total device_id and percentage
+    fig1.update_traces(
+        textinfo='percent',            # Show percentages on the pie chart
+        hovertemplate='<b>%{label}</b><br>Total: %{value}<br>Percentage: %{percent}'
+    )
+
+
+##############################################
+# [Visual 2] Days from Campaign to Streaming #
+##############################################
+# Apply date filters from sidebar selection
+if select_all_states:
+    filtered_map_df = totals.copy()
+
+else:
+    # Filter DataFrame by selected dates
+    filtered_date_diff_df = totals[(pd.to_datetime(totals['event_date']) >= pd.to_datetime(start_date)) & (pd.to_datetime(totals['event_date']) <= pd.to_datetime(end_date)) & (totals['state'].isin(state_select)) & (totals['campaign_name'].isin(campaign_select))]
+
+    df_imp_evnt_agg = filtered_date_diff_df.groupby('imp_evnt_binned').agg(
+        {'Users': np.sum, 
+         'Minutes': np.sum,
+         'Impressions': np.sum,
+         'Clicks': np.sum,
+         'Minutes per User': np.mean
+         }).round(1).reset_index()
+    
+    fig2 = plt.figure(figsize=(10, 6))
+
+    bars = plt.bar(df_imp_evnt_agg['imp_evnt_binned'], df_imp_evnt_agg[metric_select]) # '#00274C','#FFCB05'
+    for bar in bars:
+        yval = bar.get_height()
+        plt.annotate(f'{int(yval/1000)}K',
+                     xy=(bar.get_x() + bar.get_width() / 2, yval),
+                     xytext=(0, 3),  # 3 points vertical offset
+                     textcoords='offset points',
+                     ha='center', va='bottom')
+
+    avg = df_imp_evnt_agg[metric_select].mean()
+    
+    # plot average
+    plt.axhline(y=avg, ls='--', color='#FFCB05', label='Average') # '#00274C','#FFCB05'
+
+    # annotate average line
+    plt.annotate(f'Avg: {avg:.1f}', xy=(bar.get_x(), avg), xytext=(bar.get_x() + 1, avg + 50))
+
+    # format plot
+    plt.box(False)
+    plt.ylabel(f"Total {metric_select}",fontsize=10)
+    plt.xlabel('Days', fontsize=10)
+
+    # Set the y limits making the maximum 10% greater
+    ymin, ymax = min(df_imp_evnt_agg[metric_select]), max(df_imp_evnt_agg[metric_select])
+    plt.ylim(ymin, 1.1 * ymax)
+    plt.gca().yaxis.set_major_formatter(mtick.FuncFormatter(lambda x, _: f'{int(x/1000)}K'))
+    # plt.title("Days from Campaign to Streaming")
+
+    # Remove x and y tick lines
+    plt.tick_params(axis='both', which='both', length=0)
+
+
+##############################################################
+# [Visual 3] Total Users or Average Minutes Watched by State #
+##############################################################
+# Filter data for selected states
+if select_all_states:
+    filtered_map_df = totals.copy()
+
+else:
+    filtered_map_df = totals[(pd.to_datetime(totals['event_date']) >= pd.to_datetime(start_date)) & (pd.to_datetime(totals['event_date']) <= pd.to_datetime(end_date)) & (totals['state'].isin(state_select)) & (totals['campaign_name'].isin(campaign_select))].copy()
+
+    filtered_map_agg = filtered_map_df.groupby(['state','latitude','longitude']).agg(
+        {'Users': np.sum, 
+         'Minutes': np.sum,
+         'Impressions': np.sum,
+         'Clicks': np.sum,
+         'Minutes per User': np.mean
+         }).round(1).reset_index()
+
+    # scatter geo version
+    fig3 = px.scatter_geo(
+        filtered_map_agg,
         lat="latitude",
         lon="longitude",
-        size="total_min_watched",
-        color="state",
+        size=metric_select,
+        color=metric_select,
         hover_name="state",
-        title="Engagement by Geography"
+        hover_data={metric_select: True},
+        # title=f"{metric_select.replace('_', ' ').title()} by State"
     )
-    st.plotly_chart(geo_map)
 
-    # Data Table
-    st.subheader("Filtered Data Table")
-    st.dataframe(filtered_data)
+    # Update layout (remove colorbar title)
+    fig3.update_layout(coloraxis_colorbar={"title": ""})
 
-elif menu == "Predict Watch Time":
-    st.subheader("Predict Average Watch Time")
+    # Remove color bar
+    fig3.update_layout(coloraxis_showscale=False)
 
-    impressions = st.number_input("Impressions", min_value=0)
-    clicks = st.number_input("Clicks", min_value=0)
-    genres = {genre: st.slider(genre, 0.0, 1.0) for genre in genre_columns}
+    # Display the chart and aggregated metric
+    # metric_sum = round(filtered_map_agg[metric_select],1)
+    # st.sidebar.metric(label=f"Total {metric_select.replace('_', ' ').title()} by Selected States(s)", value=filtered_map_agg[metric_select])
 
-    if st.button("Predict"):
+
+##############################
+# [Visual 4] Totals by Genre #
+##############################
+# Filter data based on user selections
+if select_all_states:
+    filtered_genre_df = totals_genre.copy()
+
+else:
+    filtered_genre_df = totals_genre[(pd.to_datetime(totals_genre['event_date']) >= pd.to_datetime(start_date)) & (pd.to_datetime(totals_genre['event_date']) <= pd.to_datetime(end_date)) & (totals_genre['state'].isin(state_select)) & (totals_genre['campaign_name'].isin(campaign_select))].copy()
+
+    filtered_genre_agg = filtered_genre_df.groupby(['content_genre']).agg(
+        {'Users': np.sum, 
+         'Minutes': np.sum,
+         'Impressions': np.sum,
+         'Clicks': np.sum,
+         'Minutes per User': np.mean
+         }).round(1).reset_index()
+
+    # rename columns for visuals
+    filtered_genre_agg = filtered_genre_agg.rename(columns={'content_genre':'Genre'})
+    
+    # Bar Chart
+    fig4 = px.bar(
+        filtered_genre_agg,
+        x='Genre',
+        y=metric_select,
+        # title="Number of Users by Genre",
+        labels={f"{metric_select}, 'Genre'"}
+    )
+
+    fig4.update_layout(
+        width=800, 
+        height=400,
+        xaxis=dict(
+            tickangle=-45  # Rotate x-axis labels by -45 degrees
+            )
+    )
+
+
+############################
+# Deploy Streamlit Visuals #
+############################
+# Row 1
+col1, col2 = st.columns((1,1))
+with col1:
+    st.markdown(f"##### {metric_select.replace('_', ' ').title()} by State")
+    st.plotly_chart(fig3)
+with col2:
+    st.markdown(f'##### {metric_select} by Marketing Partner')
+    st.plotly_chart(fig1)
+    
+# # Row 2
+# st.markdown('### Line chart')
+col1, col2 = st.columns((1,1))
+with col1:
+    st.markdown(f"##### {metric_select} by Genre")
+    st.markdown("###### For Genres >= 10 Users")
+    st.plotly_chart(fig4)
+with col2:
+    st.markdown("##### Days from Campaign to Streaming")
+    st.pyplot(fig2)
+
+# # Row 3
+# Add downloadable campaign crosstab
+# rename columns for visuals
+filtered_genre_df = filtered_genre_df.rename(
+    columns={
+    'event_date': 'Watch Date',
+    'campaign_name': 'Campaign',
+    'content_genre': 'Genre',
+    'state': 'State',
+    })
+
+st.markdown("##### Genres by Campaign(s)")
+st.markdown("###### For Genres >= 10 Users")
+st.dataframe(filtered_genre_df)
+
+
+# Add Prediction Tools Section Below Existing Visualizations
+st.markdown("---")  # Separator for clarity
+st.header("Predict Campaign Performance")
+st.markdown("Test the performance of a theoretical or previously untested campaign that wasn’t included in the training data using three insightful models. The first predicts the average watch time per device, the second forecasts the campaign score, and the third identifies the most similar campaign from the training data for comparison. For details on model accuracy and development, refer to the accompanying paper. The metric used here is average minutes watched per device.")
+
+# Shared Inputs for Prediction Tools
+impressions = st.number_input("Impressions", min_value=0)
+clicks = st.number_input("Clicks", min_value=0)
+genres = {genre: st.slider(genre, 0.0, 1.0) for genre in genre_columns}
+
+# Radio button to select Prediction Tool
+st.markdown("### Choose a Prediction Tool")
+option = st.radio(
+    "Select a tool:",
+    ["Predict Watch Time", "Predict Campaign Score", "Most Similar Campaign"]
+)
+
+if option == "Predict Watch Time":
+    if st.button("Predict Watch Time"):
         user_input = np.array([impressions, clicks] + list(genres.values())).reshape(1, -1)
         prediction = reg_model.predict(user_input)
         st.write(f"Predicted Average Watch Time per Device: {prediction[0]:.2f}")
 
-
-
-elif menu == "Predict Campaign Score":
-    st.subheader("Predict Campaign Score")
-    st.write("This section uses a Random Forest model to predict the campaign score. Here are some details about the model's performance:")
-    st.write("- **Accuracy**: 56%")
-    st.write("- **Classification Report**:")
-    st.code("""
-              precision    recall  f1-score   support
-
-        Poor       0.25      0.33      0.29         3
-        Fair       0.33      0.50      0.40         2
-        Good       1.00      0.83      0.91         6
-   Excellent       0.50      0.40      0.44         5
-
-    accuracy                           0.56        16
-   macro avg       0.52      0.52      0.51        16
-weighted avg       0.62      0.56      0.58        16
-    """)
-    st.write("- **Confusion Matrix**:")
-    st.code("""
-    [[1 1 0 1]
-     [1 1 0 0]
-     [0 0 5 1]
-     [2 1 0 2]]
-    """)
-    st.subheader("Predict Campaign Score")
-
-    impressions = st.number_input("Impressions", min_value=0)
-    clicks = st.number_input("Clicks", min_value=0)
-    genres = {genre: st.slider(genre, 0.0, 1.0) for genre in genre_columns}
-
-    if st.button("Predict Score"):
+elif option == "Predict Campaign Score":
+    if st.button("Predict Campaign Score"):
         user_input = np.array([impressions, clicks] + list(genres.values())).reshape(1, -1)
         score_prediction = rf_classifier.predict(user_input)
         score_mapping = {0: 'Poor', 1: 'Fair', 2: 'Good', 3: 'Excellent'}
         st.write(f"Predicted Campaign Score: {score_mapping[score_prediction[0]]}")
-elif menu == "Most Similar Campaign":
-    st.subheader("Find the Most Similar Campaign")
 
-    # Input form
-    impressions = st.number_input("Impressions", min_value=0)
-    clicks = st.number_input("Clicks", min_value=0)
-    genres = {genre: st.slider(genre, 0.0, 1.0) for genre in genre_columns}
-
+elif option == "Most Similar Campaign":
     if st.button("Find Similar Campaign"):
-        # Create user input array
         user_input = np.array([impressions, clicks] + list(genres.values())).reshape(1, -1)
         user_input_scaled = scaler.transform(user_input)
 
@@ -196,3 +434,11 @@ elif menu == "Most Similar Campaign":
             file_name='similar_campaign.csv',
             mime='text/csv'
         )
+
+#########################
+# Streamlit Sidebar End #
+#########################
+st.sidebar.markdown('''
+---
+Created with ❤️ by Plutonians.
+''')
