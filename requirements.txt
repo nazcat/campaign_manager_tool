@@ -6,4 +6,3 @@ plotly
 matplotlib
 joblib
 sklearn
-sklearn.ensemble
