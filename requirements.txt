@@ -6,4 +6,4 @@ plotly
 matplotlib
 joblib
 sklearn
-RandomForestClassifier
+sklearn.ensemble
