@@ -5,4 +5,4 @@ datetime
 plotly
 matplotlib
 joblib
-sklearn
+scikit-learn
