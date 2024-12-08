@@ -41,12 +41,6 @@ totals_genre = totals_genre.rename(
 ##########################################
 # Load file anon_processed_unique_device_v3.csv from GCP
 
-
-# For GitHub Actions, you access secrets as environment variables
-my_secret_key = os.getenv("MY_SECRET_KEY")
-
-# Use the secret value in your app
-
 # Set up Google Cloud credentials
 service_key = {
   "type": "service_account",
