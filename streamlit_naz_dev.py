@@ -4,6 +4,9 @@ import numpy as np
 import plotly.express as px # version 5.15.0
 import matplotlib.pyplot as plt # version 3.7.1
 import matplotlib.ticker as mtick
+import seaborn as sns
+from statsmodels.tsa.arima.model import ARIMA
+import matplotlib.dates as mdates
 
 
 ############################
@@ -40,10 +43,11 @@ st.set_page_config(layout='wide', initial_sidebar_state='expanded')
 
 # with open('style.css') as f:
 #     st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
-
-st.sidebar.header('')
+    
+# st.sidebar.header('Campaign Performance')
 
 # add date filter
+st.sidebar.header('')
 st.sidebar.markdown('## Streaming Dates')
 start_date = st.sidebar.date_input("Start Date", value=min(pd.to_datetime(totals['event_date'])))
 end_date = st.sidebar.date_input("End Date", value=max(pd.to_datetime(totals['event_date'])))                               
@@ -129,9 +133,50 @@ else:
     col5.metric("Minutes per User", mpu)
 
 
-#########################################
-# [Visual 1] Users by Marketing Partner #
-#########################################
+##############################################################
+# [Visual #1] Total Users or Average Minutes Watched by State #
+##############################################################
+# Filter data for selected states
+if select_all_states:
+    filtered_map_df = totals.copy()
+
+else:
+    filtered_map_df = totals[(pd.to_datetime(totals['event_date']) >= pd.to_datetime(start_date)) & (pd.to_datetime(totals['event_date']) <= pd.to_datetime(end_date)) & (totals['state'].isin(state_select)) & (totals['campaign_name'].isin(campaign_select))].copy()
+
+    filtered_map_agg = filtered_map_df.groupby(['state','latitude','longitude']).agg(
+        {'Users': np.sum, 
+         'Minutes': np.sum,
+         'Impressions': np.sum,
+         'Clicks': np.sum,
+         'Minutes per User': np.mean
+         }).round(1).reset_index()
+
+    # scatter geo version
+    fig1 = px.scatter_geo(
+        filtered_map_agg,
+        lat="latitude",
+        lon="longitude",
+        size=metric_select,
+        color=metric_select,
+        hover_name="state",
+        hover_data={metric_select: True},
+        # title=f"{metric_select.replace('_', ' ').title()} by State"
+    )
+
+    # Update layout (remove colorbar title)
+    fig1.update_layout(coloraxis_colorbar={"title": ""})
+
+    # Remove color bar
+    fig1.update_layout(coloraxis_showscale=False)
+
+    # Display the chart and aggregated metric
+    # metric_sum = round(filtered_map_agg[metric_select],1)
+    # st.sidebar.metric(label=f"Total {metric_select.replace('_', ' ').title()} by Selected States(s)", value=filtered_map_agg[metric_select])
+
+
+##########################################
+# [Visual #2] Users by Marketing Partner #
+##########################################
 if start_date > end_date:
     st.sidebar.error("Start date must be before end date.")
 
@@ -157,7 +202,7 @@ else:
     color_theme = px.colors.qualitative.Set3
 
     # Create the Pie Chart
-    fig1 = px.pie(
+    fig2 = px.pie(
         filtered_partner_agg,
         names='marketing_partner',    
         values=metric_select,            
@@ -168,15 +213,54 @@ else:
     )
 
     # Customize hover template to display total device_id and percentage
-    fig1.update_traces(
+    fig2.update_traces(
         textinfo='percent',            # Show percentages on the pie chart
         hovertemplate='<b>%{label}</b><br>Total: %{value}<br>Percentage: %{percent}'
     )
 
 
-##############################################
-# [Visual 2] Days from Campaign to Streaming #
-##############################################
+###############################
+# [Visual #3] Totals by Genre #
+###############################
+# Filter data based on user selections
+if select_all_states:
+    filtered_genre_df = totals_genre.copy()
+
+else:
+    filtered_genre_df = totals_genre[(pd.to_datetime(totals_genre['event_date']) >= pd.to_datetime(start_date)) & (pd.to_datetime(totals_genre['event_date']) <= pd.to_datetime(end_date)) & (totals_genre['state'].isin(state_select)) & (totals_genre['campaign_name'].isin(campaign_select))].copy()
+
+    filtered_genre_agg = filtered_genre_df.groupby(['content_genre']).agg(
+        {'Users': np.sum, 
+         'Minutes': np.sum,
+         'Impressions': np.sum,
+         'Clicks': np.sum,
+         'Minutes per User': np.mean
+         }).round(1).reset_index()
+
+    # rename columns for visuals
+    filtered_genre_agg = filtered_genre_agg.rename(columns={'content_genre':'Genre'})
+    
+    # Bar Chart
+    fig3 = px.bar(
+        filtered_genre_agg,
+        x='Genre',
+        y=metric_select,
+        # title="Number of Users by Genre",
+        labels={f"{metric_select}, 'Genre'"}
+    )
+
+    fig3.update_layout(
+        width=800, 
+        height=400,
+        xaxis=dict(
+            tickangle=-45  # Rotate x-axis labels by -45 degrees
+            )
+    )
+
+
+###############################################
+# [Visual #4] Days from Campaign to Streaming #
+###############################################
 # Apply date filters from sidebar selection
 if select_all_states:
     filtered_map_df = totals.copy()
@@ -193,7 +277,7 @@ else:
          'Minutes per User': np.mean
          }).round(1).reset_index()
     
-    fig2 = plt.figure(figsize=(10, 6))
+    fig4 = plt.figure(figsize=(6, 6))
 
     bars = plt.bar(df_imp_evnt_agg['imp_evnt_binned'], df_imp_evnt_agg[metric_select]) # '#00274C','#FFCB05'
     for bar in bars:
@@ -227,84 +311,77 @@ else:
     plt.tick_params(axis='both', which='both', length=0)
 
 
-##############################################################
-# [Visual 3] Total Users or Average Minutes Watched by State #
-##############################################################
+#################################
+# [Visual #5] ARIMA Forecasting #
+#################################
+#import matplotlib.dates as mdates
+
 # Filter data for selected states
 if select_all_states:
-    filtered_map_df = totals.copy()
+    filtered_arima_df = totals.copy()
 
 else:
-    filtered_map_df = totals[(pd.to_datetime(totals['event_date']) >= pd.to_datetime(start_date)) & (pd.to_datetime(totals['event_date']) <= pd.to_datetime(end_date)) & (totals['state'].isin(state_select)) & (totals['campaign_name'].isin(campaign_select))].copy()
+    filtered_arima_df = totals[(pd.to_datetime(totals['event_date']) >= pd.to_datetime(start_date)) & (pd.to_datetime(totals['event_date']) <= pd.to_datetime(end_date)) & (totals['state'].isin(state_select)) & (totals['campaign_name'].isin(campaign_select))].copy()
 
-    filtered_map_agg = filtered_map_df.groupby(['state','latitude','longitude']).agg(
-        {'Users': np.sum, 
-         'Minutes': np.sum,
-         'Impressions': np.sum,
-         'Clicks': np.sum,
-         'Minutes per User': np.mean
-         }).round(1).reset_index()
-
-    # scatter geo version
-    fig3 = px.scatter_geo(
-        filtered_map_agg,
-        lat="latitude",
-        lon="longitude",
-        size=metric_select,
-        color=metric_select,
-        hover_name="state",
-        hover_data={metric_select: True},
-        # title=f"{metric_select.replace('_', ' ').title()} by State"
-    )
-
-    # Update layout (remove colorbar title)
-    fig3.update_layout(coloraxis_colorbar={"title": ""})
-
-    # Remove color bar
-    fig3.update_layout(coloraxis_showscale=False)
-
-    # Display the chart and aggregated metric
-    # metric_sum = round(filtered_map_agg[metric_select],1)
-    # st.sidebar.metric(label=f"Total {metric_select.replace('_', ' ').title()} by Selected States(s)", value=filtered_map_agg[metric_select])
-
-
-##############################
-# [Visual 4] Totals by Genre #
-##############################
-# Filter data based on user selections
-if select_all_states:
-    filtered_genre_df = totals_genre.copy()
-
-else:
-    filtered_genre_df = totals_genre[(pd.to_datetime(totals_genre['event_date']) >= pd.to_datetime(start_date)) & (pd.to_datetime(totals_genre['event_date']) <= pd.to_datetime(end_date)) & (totals_genre['state'].isin(state_select)) & (totals_genre['campaign_name'].isin(campaign_select))].copy()
-
-    filtered_genre_agg = filtered_genre_df.groupby(['content_genre']).agg(
-        {'Users': np.sum, 
-         'Minutes': np.sum,
-         'Impressions': np.sum,
-         'Clicks': np.sum,
-         'Minutes per User': np.mean
-         }).round(1).reset_index()
-
-    # rename columns for visuals
-    filtered_genre_agg = filtered_genre_agg.rename(columns={'content_genre':'Genre'})
+    if metric_select == 'minutes_per_user':
+         ARIMAforecast = filtered_arima_df.groupby(['event_date']).agg({metric_select: np.mean})
+    else:
+        ARIMAforecast = filtered_arima_df.groupby(['event_date']).agg({metric_select: np.sum})
     
-    # Bar Chart
-    fig4 = px.bar(
-        filtered_genre_agg,
-        x='Genre',
-        y=metric_select,
-        # title="Number of Users by Genre",
-        labels={f"{metric_select}, 'Genre'"}
-    )
+    fig5, ax = plt.subplots(figsize=(6, 5))
+    
+    graph_idea = ARIMAforecast[[metric_select]]
+    
+    order = (7,0,14) # p,d,q values
+    num_forecasts = 30
+    model = ARIMA(graph_idea, order = order)
+    model_fit = model.fit()
+    forecasts = model_fit.predict(start=len(graph_idea),end=len(graph_idea)+num_forecasts-1,dynamic=True)
+    add = pd.DataFrame(forecasts)
+    
+    graph_idea.reset_index(inplace=True)
+    newday = int(graph_idea.iloc[len(graph_idea)-1][0][-2:])
+    basedate = graph_idea.iloc[len(graph_idea)-1][0][:-2]
+    
+    monthlength = {'06':30,'07':31,'08':31,'09':30,'10':31,'11':30}
+    
+    for i in range(len(add)):
+        x = len(graph_idea)
+        i2 = i + 1
+        newday = newday + 1
+        if len(str(newday)) < 2:
+            day2 = '0' + str(newday)
+        else:
+            day2 = str(newday)
+        date = basedate + day2
+        if int(day2) > int(monthlength[date[5:-3]]):
+            #if int(day2) > int(monthlength[date[5:-3]]):
+            newmonth = int(date[5:-3]) + 1
+            if len(str(newmonth)) < 2:
+                newmonth = '0' + str(newmonth)
+            else:
+                newmonth = str(newmonth)
+            basedate = '2024-' + newmonth + '-'
+            date = basedate + '01'
+            newday = 1
+            #else:
+            #    continue
+        row = {'event_date': date, metric_select: add.iloc[i][0]}
+        plot_df = graph_idea._append(row, ignore_index = True)
+        
+    #forecasts
+    plt.plot(pd.to_datetime(plot_df['event_date']), plot_df[metric_select])
+   
+    # format plot
+    plt.box(False)
+    plt.ylabel(f"Total {metric_select}",fontsize=10)
+    plt.xlabel('Watch Date', fontsize=10)
+    ax.xaxis.set_major_locator(mdates.WeekdayLocator(interval=1, byweekday=mdates.MO))  # Major ticks every Monday
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d')) 
 
-    fig4.update_layout(
-        width=800, 
-        height=400,
-        xaxis=dict(
-            tickangle=-45  # Rotate x-axis labels by -45 degrees
-            )
-    )
+    # Remove x and y tick lines
+    plt.tick_params(axis='both', which='both', length=0)
+    plt.xticks(rotation=45)
 
 
 ############################
@@ -314,21 +391,25 @@ else:
 col1, col2 = st.columns((1,1))
 with col1:
     st.markdown(f"##### {metric_select.replace('_', ' ').title()} by State")
-    st.plotly_chart(fig3)
+    st.plotly_chart(fig1)
 with col2:
     st.markdown(f'##### {metric_select} by Marketing Partner')
-    st.plotly_chart(fig1)
+    st.plotly_chart(fig2)
     
 # # Row 2
 # st.markdown('### Line chart')
-col1, col2 = st.columns((1,1))
+col1, col2, col3 = st.columns((1,1,1))
 with col1:
     st.markdown(f"##### {metric_select} by Genre")
     st.markdown("###### For Genres >= 10 Users")
-    st.plotly_chart(fig4)
+    st.plotly_chart(fig3)
 with col2:
     st.markdown("##### Days from Campaign to Streaming")
-    st.pyplot(fig2)
+    st.pyplot(fig4)
+with col3:
+    st.markdown(f"##### {metric_select} Forecast")
+    st.pyplot(fig5)
+
 
 # # Row 3
 # Add downloadable campaign crosstab
