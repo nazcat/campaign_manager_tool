@@ -52,7 +52,7 @@ service_key = {
   "auth_uri": secrets.AUTH_URI,
   "token_uri": secrets.TOKEN_URI,
   "auth_provider_x509_cert_url": secrets.AUTH_PROVIDER_URL,
-  "client_x509_cert_url": secrets.CLIENT_CER_URL,
+  "client_x509_cert_url": secrets.CLIENT_CERT_URL,
   "universe_domain": "googleapis.com"
 }
 
