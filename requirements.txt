@@ -6,3 +6,5 @@ plotly
 matplotlib
 joblib
 scikit-learn
+seaborn
+statsmodels
