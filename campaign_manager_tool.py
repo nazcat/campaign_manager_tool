@@ -45,7 +45,7 @@ totals_genre = totals_genre.rename(
 service_key = {
   "type": "service_account",
   "project_id": st.secrets['PROJECT_ID'],
-  "private_key_id": st.secrets.['PRIVATE_KEY_ID'],
+  "private_key_id": st.secrets['PRIVATE_KEY_ID'],
   "private_key": st.secrets['PRIVATE_KEY'],
   "client_email": st.secrets['CLIENT_EMAIL'],
   "client_id": st.secrets['CLIENT_ID'],
