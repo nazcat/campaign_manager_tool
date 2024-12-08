@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd # version 2.0.3
 import numpy as np
-import plotly.express as px # version 5.15.0
+import plotly as px # version 5.15.0
 import matplotlib.pyplot as plt # version 3.7.1
 import matplotlib.ticker as mtick
 import joblib
