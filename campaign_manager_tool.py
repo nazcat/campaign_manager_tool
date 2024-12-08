@@ -41,18 +41,21 @@ totals_genre = totals_genre.rename(
 ##########################################
 # Load file anon_processed_unique_device_v3.csv from GCP
 
+PROJECT_ID = st.secrets["PROJECT_ID"]
+
+
 # Set up Google Cloud credentials
 service_key = {
   "type": "service_account",
-  "project_id": secrets.PROJECT_ID,
-  "private_key_id": secrets.PRIVATE_KEY_ID,
-  "private_key": secrets.PRIVATE_KEY,
-  "client_email": secrets.CLIENT_EMAIL,
-  "client_id": secrets.CLIENT_ID,
-  "auth_uri": secrets.AUTH_URI,
-  "token_uri": secrets.TOKEN_URI,
-  "auth_provider_x509_cert_url": secrets.AUTH_PROVIDER_URL,
-  "client_x509_cert_url": secrets.CLIENT_CERT_URL,
+  "project_id": st.secrets['PROJECT_ID'],
+  "private_key_id": st.secrets.['PRIVATE_KEY_ID'],
+  "private_key": st.secrets['PRIVATE_KEY'],
+  "client_email": st.secrets['CLIENT_EMAIL'],
+  "client_id": st.secrets['CLIENT_ID'],
+  "auth_uri": st.secrets['AUTH_URI'],
+  "token_uri": st.secrets['TOKEN_URI'],
+  "auth_provider_x509_cert_url": st.secrets['AUTH_PROVIDER_URL'],
+  "client_x509_cert_url": st.secrets['CLIENT_CERT_URL'],
   "universe_domain": "googleapis.com"
 }
 
