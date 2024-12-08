@@ -8,3 +8,5 @@ joblib
 scikit-learn
 seaborn
 statsmodels
+google-cloud-storage
+io
