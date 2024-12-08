@@ -314,72 +314,72 @@ else:
 #################################
 # [Visual #5] ARIMA Forecasting #
 #################################
-# Filter data for selected states
-if select_all_states:
-    filtered_arima_df = totals.copy()
+# NEED TO MAKE PROCESS MORE EFFICIENT, TAKES TOO LONG TO LOAD IN STREAMLIT CLOUD
+# if select_all_states:
+#     filtered_arima_df = totals.copy()
 
-else:
-    filtered_arima_df = totals[(pd.to_datetime(totals['event_date']) >= pd.to_datetime(start_date)) & (pd.to_datetime(totals['event_date']) <= pd.to_datetime(end_date)) & (totals['state'].isin(state_select)) & (totals['campaign_name'].isin(campaign_select))].copy()
+# else:
+#     filtered_arima_df = totals[(pd.to_datetime(totals['event_date']) >= pd.to_datetime(start_date)) & (pd.to_datetime(totals['event_date']) <= pd.to_datetime(end_date)) & (totals['state'].isin(state_select)) & (totals['campaign_name'].isin(campaign_select))].copy()
 
-    if metric_select == 'minutes_per_user':
-        ARIMAforecast = filtered_arima_df.groupby(['event_date']).agg({metric_select: np.mean})
-    else:
-        ARIMAforecast = filtered_arima_df.groupby(['event_date']).agg({metric_select: np.sum})
+#     if metric_select == 'minutes_per_user':
+#         ARIMAforecast = filtered_arima_df.groupby(['event_date']).agg({metric_select: np.mean})
+#     else:
+#         ARIMAforecast = filtered_arima_df.groupby(['event_date']).agg({metric_select: np.sum})
     
-    fig5, ax = plt.subplots(figsize=(6, 5))
+#     fig5, ax = plt.subplots(figsize=(6, 5))
     
-    graph_idea = ARIMAforecast[[metric_select]]
+#     graph_idea = ARIMAforecast[[metric_select]]
     
-    order = (7,0,14) # p,d,q values
-    num_forecasts = 30
-    model = ARIMA(graph_idea, order = order)
-    model_fit = model.fit()
-    forecasts = model_fit.predict(start=len(graph_idea),end=len(graph_idea)+num_forecasts-1,dynamic=True)
-    add = pd.DataFrame(forecasts)
+#     order = (7,0,14) # p,d,q values
+#     num_forecasts = 30
+#     model = ARIMA(graph_idea, order = order)
+#     model_fit = model.fit()
+#     forecasts = model_fit.predict(start=len(graph_idea),end=len(graph_idea)+num_forecasts-1,dynamic=True)
+#     add = pd.DataFrame(forecasts)
     
-    graph_idea.reset_index(inplace=True)
-    newday = int(graph_idea.iloc[len(graph_idea)-1][0][-2:])
-    basedate = graph_idea.iloc[len(graph_idea)-1][0][:-2]
+#     graph_idea.reset_index(inplace=True)
+#     newday = int(graph_idea.iloc[len(graph_idea)-1][0][-2:])
+#     basedate = graph_idea.iloc[len(graph_idea)-1][0][:-2]
     
-    monthlength = {'06':30,'07':31,'08':31,'09':30,'10':31,'11':30}
+#     monthlength = {'06':30,'07':31,'08':31,'09':30,'10':31,'11':30}
     
-    for i in range(len(add)):
-        x = len(graph_idea)
-        i2 = i + 1
-        newday = newday + 1
-        if len(str(newday)) < 2:
-            day2 = '0' + str(newday)
-        else:
-            day2 = str(newday)
-        date = basedate + day2
-        if int(day2) > int(monthlength[date[5:-3]]):
-            #if int(day2) > int(monthlength[date[5:-3]]):
-            newmonth = int(date[5:-3]) + 1
-            if len(str(newmonth)) < 2:
-                newmonth = '0' + str(newmonth)
-            else:
-                newmonth = str(newmonth)
-            basedate = '2024-' + newmonth + '-'
-            date = basedate + '01'
-            newday = 1
-            #else:
-            #    continue
-        row = {'event_date': date, metric_select: add.iloc[i][0]}
-        plot_df = graph_idea._append(row, ignore_index = True)
+#     for i in range(len(add)):
+#         x = len(graph_idea)
+#         i2 = i + 1
+#         newday = newday + 1
+#         if len(str(newday)) < 2:
+#             day2 = '0' + str(newday)
+#         else:
+#             day2 = str(newday)
+#         date = basedate + day2
+#         if int(day2) > int(monthlength[date[5:-3]]):
+#             #if int(day2) > int(monthlength[date[5:-3]]):
+#             newmonth = int(date[5:-3]) + 1
+#             if len(str(newmonth)) < 2:
+#                 newmonth = '0' + str(newmonth)
+#             else:
+#                 newmonth = str(newmonth)
+#             basedate = '2024-' + newmonth + '-'
+#             date = basedate + '01'
+#             newday = 1
+#             #else:
+#             #    continue
+#         row = {'event_date': date, metric_select: add.iloc[i][0]}
+#         plot_df = graph_idea._append(row, ignore_index = True)
         
-    #forecasts
-    plt.plot(pd.to_datetime(plot_df['event_date']), plot_df[metric_select])
+#     #forecasts
+#     plt.plot(pd.to_datetime(plot_df['event_date']), plot_df[metric_select])
    
-    # format plot
-    plt.box(False)
-    plt.ylabel(f"Total {metric_select}",fontsize=10)
-    plt.xlabel('Watch Date', fontsize=10)
-    ax.xaxis.set_major_locator(mdates.WeekdayLocator(interval=1, byweekday=mdates.MO))  # Major ticks every Monday
-    ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d')) 
+#     # format plot
+#     plt.box(False)
+#     plt.ylabel(f"Total {metric_select}",fontsize=10)
+#     plt.xlabel('Watch Date', fontsize=10)
+#     ax.xaxis.set_major_locator(mdates.WeekdayLocator(interval=1, byweekday=mdates.MO))  # Major ticks every Monday
+#     ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d')) 
 
-    # Remove x and y tick lines
-    plt.tick_params(axis='both', which='both', length=0)
-    plt.xticks(rotation=45)
+#     # Remove x and y tick lines
+#     plt.tick_params(axis='both', which='both', length=0)
+#     plt.xticks(rotation=45)
 
 
 ############################
@@ -396,7 +396,7 @@ with col2:
     
 # # Row 2
 # st.markdown('### Line chart')
-col1, col2, col3 = st.columns((1,1,1))
+col1, col2= st.columns((1,1,1))
 with col1:
     st.markdown(f"##### {metric_select} by Genre")
     st.markdown("###### For Genres >= 10 Users")
@@ -404,9 +404,9 @@ with col1:
 with col2:
     st.markdown("##### Days from Campaign to Streaming")
     st.pyplot(fig4)
-with col3:
-    st.markdown(f"##### {metric_select} Forecast")
-    st.pyplot(fig5)
+# with col3:
+#     st.markdown(f"##### {metric_select} Forecast")
+#     st.pyplot(fig5)
 
 
 # # Row 3
