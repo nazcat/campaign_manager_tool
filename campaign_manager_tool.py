@@ -41,7 +41,7 @@ totals_genre = totals_genre.rename(
 ##########################################
 # Load file anon_processed_unique_device_v3.csv from GCP
 
-# Set up Google Cloud credentials
+# Set up Google Cloud credentials using secrets stored in Streamlit Cloud
 service_key = {
   "type": "service_account",
   "project_id": st.secrets['PROJECT_ID'],
