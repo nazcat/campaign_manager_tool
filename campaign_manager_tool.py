@@ -44,7 +44,7 @@ totals_genre = totals_genre.rename(
 # Set up Google Cloud credentials
 service_key = {
   "type": "service_account",
-  "project_id": ${{ secrets.PROJECT_ID }},
+  "project_id": secrets.PROJECT_ID,
   "private_key_id": ${{ secrets.PRIVATE_KEY_ID }},
   "private_key": ${{ secrets.PRIVATE_KEY }},
   "client_email": ${{ secrets.CLIENT_EMAIL }},
