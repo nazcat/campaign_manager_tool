@@ -41,9 +41,6 @@ totals_genre = totals_genre.rename(
 ##########################################
 # Load file anon_processed_unique_device_v3.csv from GCP
 
-PROJECT_ID = st.secrets["PROJECT_ID"]
-
-
 # Set up Google Cloud credentials
 service_key = {
   "type": "service_account",
