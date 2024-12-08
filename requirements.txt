@@ -8,4 +8,3 @@ scikit-learn==1.5.2
 seaborn==0.13.2
 statsmodels==0.14.0
 google-cloud-storage==1.32.0
-os
