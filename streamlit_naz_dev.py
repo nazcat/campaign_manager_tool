@@ -314,8 +314,6 @@ else:
 #################################
 # [Visual #5] ARIMA Forecasting #
 #################################
-#import matplotlib.dates as mdates
-
 # Filter data for selected states
 if select_all_states:
     filtered_arima_df = totals.copy()
@@ -324,7 +322,7 @@ else:
     filtered_arima_df = totals[(pd.to_datetime(totals['event_date']) >= pd.to_datetime(start_date)) & (pd.to_datetime(totals['event_date']) <= pd.to_datetime(end_date)) & (totals['state'].isin(state_select)) & (totals['campaign_name'].isin(campaign_select))].copy()
 
     if metric_select == 'minutes_per_user':
-         ARIMAforecast = filtered_arima_df.groupby(['event_date']).agg({metric_select: np.mean})
+        ARIMAforecast = filtered_arima_df.groupby(['event_date']).agg({metric_select: np.mean})
     else:
         ARIMAforecast = filtered_arima_df.groupby(['event_date']).agg({metric_select: np.sum})
     
