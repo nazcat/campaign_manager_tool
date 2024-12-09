@@ -40,6 +40,8 @@ File downloads: Refer to our GDrive to download a total of four files from [Stre
   - [total_genre.csv](https://drive.google.com/file/d/19PRykaEUS-lHebwqvpzBe4v5OGNmAUmh/view?usp=sharing) - Data aggregated to the genre level
   - [totals.csv](https://drive.google.com/file/d/1PHRAEzjbOcjqLb3I4aZbHwM2-iezdo0G/view?usp=sharing) - Data aggregated to the marketing partner level
 
+NOTE: For access to full datasets, refer to _____
+
 The code is accessible in two different ways:
 1. Using either command prompt for Windows or terminal for mac, clone Github repository:
 ```
