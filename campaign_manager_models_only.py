@@ -39,11 +39,11 @@ project_id=service_key["project_id"]
 credentials = service_account.Credentials.from_service_account_info(service_key)
 client = storage.Client(project=project_id,credentials=credentials)
 
-# # Access the file in the bucket
-# bucket_name = 'campaign_manager_tool'
-# file_name = 'anon_processed_unique_device_v3.csv'
-# bucket = client.bucket(bucket_name)
-# blob = bucket.blob(file_name)
+# Access the file in the bucket
+bucket_name = 'campaign_manager_tool'
+file_name = 'anon_processed_unique_device_v3.csv'
+bucket = client.bucket(bucket_name)
+blob = bucket.blob(file_name)
 
 # # Download the file content and read as a dataframe
 # content = blob.download_as_bytes()
