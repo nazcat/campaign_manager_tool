@@ -277,7 +277,7 @@ else:
          'Minutes per User': np.mean
          }).round(1).reset_index()
     
-    fig4 = plt.figure(figsize=(6, 4))
+    fig4 = plt.figure(figsize=(6, 6))
 
     bars = plt.bar(df_imp_evnt_agg['imp_evnt_binned'], df_imp_evnt_agg[metric_select]) # '#00274C','#FFCB05'
     for bar in bars:
