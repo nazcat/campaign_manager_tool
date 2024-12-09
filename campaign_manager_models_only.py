@@ -9,8 +9,7 @@ from sklearn.ensemble import RandomForestClassifier
 from google.cloud import storage
 from google.oauth2 import service_account
 import io
-import gcsfs
-import json
+from st_files_connection import FilesConnection
 
 # set up wide page on streamlit app
 st.set_page_config(layout='centered', initial_sidebar_state='expanded')
@@ -53,21 +52,14 @@ st.header("I love you!")
 # st.dataframe(anon_df)
 
 # Convert credentials to JSON string
-credentials = dict(st.secrets["gcp_service_account"])
-credentials_json = json.dumps(credentials)
+# credentials = dict(st.secrets["gcp_service_account"])
+# credentials_json = json.dumps(credentials)
 
-# Initialize GCS filesystem
-fs = gcsfs.GCSFileSystem(token=credentials_json)
-
-# Test if file exists
-file_path = "gs://campaign_manager_tool/anon_processed_unique_device_v3.csv"
-if fs.exists(file_path):
-    print("File exists!")
-    with fs.open(file_path, 'r') as f:
-        anon_df = pd.read_csv(f)
-    print(anon_df.head())
-else:
-    print("File not found!")
+# Create connection object and retrieve file contents.
+# Specify input format is a csv and to cache the result for 600 seconds.
+conn = st.connection('gcs', type=FilesConnection)
+anon_df = conn.read("campaign_manager_tool/anon_processed_unique_device_v3.csv", input_format="csv", ttl=600)
+st.dataframe(anon_df)
 
 
 # ############################
