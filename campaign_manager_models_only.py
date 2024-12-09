@@ -34,11 +34,9 @@ st.header("I love you!")
 #   "universe_domain": "googleapis.com"
 # }
 
-service_key = st.secrets["GCP_SERVICE_ACCOUNT"]
+credentials = st.secrets["GCP_SERVICE_ACCOUNT"]
 # #Downloaded credentials in JSON format
-project_id=service_key["project_id"]
-credentials = service_account.Credentials.from_service_account_info(service_key)
-client = storage.Client(project=project_id,credentials=credentials)
+client = storage.Client.from_service_account_info(json.loads(credentials))
 
 # Access the file in the bucket
 bucket_name = 'campaign_manager_tool'
