@@ -1,6 +1,7 @@
 ## Campaign Performance and Predictions Tool
 
-### Introduction
+
+## Introduction
 
 In today’s digital era, marketing has considerably evolved in data availability and technology. From ad hoc reporting insights to AI-powered machine learning methods, data driven decisions have become an integral part of marketing in various industries. Two popular themes include campaign effectiveness and forecasting. Marketing teams are spearheading the use of machine learning with their campaigns to engage with their customers. Fine tuning the campaign process by targeting groups of individuals who are more likely to install or subscribe to a product allows for companies to allocate their marketing resources and budget more efficiently.
 
@@ -10,12 +11,14 @@ This project aims to satisfy marketers’ needs in two ways:
 
 A beta version of the dashboard can be viewed <b>[HERE](https://campaign-manager-visuals.streamlit.app/)</b>.
 
+
 ### Business Objectives
 
 Below are few of the many business questions we're looking to answer.
 - What is the impact of campaign spend from this week to next week for total active users, viewed minutes, and minutes per user?
 - For campaign budgeting optimization for upcoming quarters, how can marketing best spend their budget to optimize spend across marketing partners to increase ROI?
 - Which states bring in the most users through campaign ads? Which states have the most total minutes watched per user from an ad?
+
 
 ## Getting Started
 
@@ -66,19 +69,15 @@ command to run if program contains helper info
 
 Contributors names and contact info
 
-ex. Dominique Pizzie  
-ex. [@DomPizzie](https://twitter.com/dompizzie)
+Naz Uremek
+Calvin Raab
+Chris Struck
+Justin Barry
 
 ## Version History
 
-* 0.2
-    * Various bug fixes and optimizations
-    * See [commit change]() or See [release history]()
 * 0.1
     * Initial Release
 
-## License
-
-This project is licensed under the [NAME HERE] License - see the LICENSE.md file for details
 
 ## Acknowledgments
