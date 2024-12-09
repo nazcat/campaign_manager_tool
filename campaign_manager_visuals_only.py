@@ -137,7 +137,7 @@ filtered_map_df = totals[(pd.to_datetime(totals['event_date']) >= pd.to_datetime
 if metric_select == 'minutes_per_user':
     filtered_map_agg = filtered_map_df.groupby(['state','latitude','longitude']).agg({metric_select: np.mean}).round(1).reset_index()
 else:
-    filtered_map_agg = filtered_map_df.groupby(['marketing_partner']).agg({metric_select: np.sum}).round(1).reset_index()
+    filtered_map_agg = filtered_map_df.groupby(['state','latitude','longitude']).agg({metric_select: np.sum}).round(1).reset_index()
     
 # scatter geo version
 fig1 = px.scatter_geo(
