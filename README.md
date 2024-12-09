@@ -1,4 +1,4 @@
-## Campaign Manager Tool
+## Campaign Planner
 
 
 ### Introduction
