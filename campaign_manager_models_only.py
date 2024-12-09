@@ -48,6 +48,7 @@ blob = bucket.blob(file_name)
 content = blob.download_as_bytes()
 anon_df = pd.read_csv(io.BytesIO(content))
 
+st.dataframe(anon_df)
 
 # ############################
 # # Load Datasets for Models #
