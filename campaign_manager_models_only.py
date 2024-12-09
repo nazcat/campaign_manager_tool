@@ -18,38 +18,38 @@ st.set_page_config(layout='centered', initial_sidebar_state='expanded')
 # load file for models from Google Cloud #
 ##########################################
 # Load file anon_processed_unique_device_v3.csv from GCP
-
+print("I love you!"
 # Set up Google Cloud credentials using secrets stored in Streamlit Cloud
-service_key = {
-  "type": "service_account",
-  "project_id": st.secrets['PROJECT_ID'],
-  "private_key_id": st.secrets['PRIVATE_KEY_ID'],
-  "private_key": st.secrets['PRIVATE_KEY'],
-  "client_email": st.secrets['CLIENT_EMAIL'],
-  "client_id": st.secrets['CLIENT_ID'],
-  "auth_uri": st.secrets['AUTH_URI'],
-  "token_uri": st.secrets['TOKEN_URI'],
-  "auth_provider_x509_cert_url": st.secrets['AUTH_PROVIDER_URL'],
-  "client_x509_cert_url": st.secrets['CLIENT_CERT_URL'],
-  "universe_domain": "googleapis.com"
-}
+# service_key = {
+#   "type": "service_account",
+#   "project_id": st.secrets['PROJECT_ID'],
+#   "private_key_id": st.secrets['PRIVATE_KEY_ID'],
+#   "private_key": st.secrets['PRIVATE_KEY'],
+#   "client_email": st.secrets['CLIENT_EMAIL'],
+#   "client_id": st.secrets['CLIENT_ID'],
+#   "auth_uri": st.secrets['AUTH_URI'],
+#   "token_uri": st.secrets['TOKEN_URI'],
+#   "auth_provider_x509_cert_url": st.secrets['AUTH_PROVIDER_URL'],
+#   "client_x509_cert_url": st.secrets['CLIENT_CERT_URL'],
+#   "universe_domain": "googleapis.com"
+# }
 
-#Downloaded credentials in JSON format
-project_id=service_key["project_id"]
-credentials = service_account.Credentials.from_service_account_info(service_key)
-client = storage.Client(project=project_id,credentials=credentials)
+# #Downloaded credentials in JSON format
+# project_id=service_key["project_id"]
+# credentials = service_account.Credentials.from_service_account_info(service_key)
+# client = storage.Client(project=project_id,credentials=credentials)
 
-# Access the file in the bucket
-bucket_name = 'campaign_manager_tool'
-file_name = 'anon_processed_unique_device_v3.csv'
-bucket = client.bucket(bucket_name)
-blob = bucket.blob(file_name)
+# # Access the file in the bucket
+# bucket_name = 'campaign_manager_tool'
+# file_name = 'anon_processed_unique_device_v3.csv'
+# bucket = client.bucket(bucket_name)
+# blob = bucket.blob(file_name)
 
-# Download the file content and read as a dataframe
-content = blob.download_as_bytes()
-anon_df = pd.read_csv(io.BytesIO(content))
+# # Download the file content and read as a dataframe
+# content = blob.download_as_bytes()
+# anon_df = pd.read_csv(io.BytesIO(content))
 
-print(anon_df)
+# print(anon_df)
 
 # ############################
 # # Load Datasets for Models #
