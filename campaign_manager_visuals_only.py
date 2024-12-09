@@ -326,7 +326,7 @@ else:
     else:
         trend_df = filtered_trend_df.groupby(['event_date']).agg({metric_select: np.sum}).reset_index()
     
-    fig5, ax = plt.subplots(figsize=(6, 4))
+    fig5, ax = plt.subplots(figsize=(6, 5))
     
     #forecasts
     plt.plot(pd.to_datetime(trend_df['event_date']), trend_df[metric_select])
