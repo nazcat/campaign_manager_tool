@@ -36,8 +36,13 @@ We would like to supplement both unsupervised and supervised learning methods wi
 
 ### Dependencies
 
-* Describe any prerequisites, libraries, OS version, etc., needed before installing program.
-* ex. Windows 10
+- Prerequisites: Requires a programming tool of choice (Jupyter Notebook, VS Code, Google Colab, etc)
+- Libraries: See [requirements.txt](https://github.com/nazcat/campaign_manager_tool/blob/main/requirements.txt)
+- File downloads: Refer to our GDrive to download a total of four files from [Streamlit Datasets](https://drive.google.com/drive/folders/1_Tq1ZCAZNYtc6vUbpKIpBLeoZeKRvH38?usp=sharing):
+  - [anon_processed_unique_device_v3.csv](https://drive.google.com/file/d/1PvHjL6HEmSuEix0vLT3FJalf7NEm15Ql/view?usp=sharing) -  Raw datafile with encrypted features (i.e. device_id, campaign_id, etc)
+  - [anan_campaign_modeling_data_v3.csv](https://drive.google.com/file/d/1RQabm5Sh0MtiJoi1zKyHGJc049y09JBB/view?usp=sharing) - Data aggregated to the campaign level
+  - [total_genre.csv](https://drive.google.com/file/d/19PRykaEUS-lHebwqvpzBe4v5OGNmAUmh/view?usp=sharing) - Data aggregated to the genre level
+  - [totals.csv](https://drive.google.com/file/d/1PHRAEzjbOcjqLb3I4aZbHwM2-iezdo0G/view?usp=sharing) - Data aggregated to the marketing partner level
 
 ### Installing
 
