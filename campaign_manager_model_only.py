@@ -12,7 +12,7 @@ import io
 
 
 # set up wide page on streamlit app
-st.set_page_config(layout='wide', initial_sidebar_state='expanded')
+st.set_page_config(layout='central', initial_sidebar_state='expanded')
 
 ##########################################
 # load file for models from Google Cloud #
@@ -89,47 +89,6 @@ genre_columns = [
     "Crime", "Food & Cooking", "Faith & Spirituality", "Game Show", "Dance", "Children & Family",
     "Telenovela", "Talk Show", "Variety Show", "War", "Young Adult", "None"
 ]
-
-#####################################
-# Streamlit Setup and Sidebar Start #
-#####################################
-st.sidebar.header('')
-
-# add date filter
-st.sidebar.markdown('## Streaming Dates')
-start_date = st.sidebar.date_input("Start Date", value=min(pd.to_datetime(totals['event_date'])))
-end_date = st.sidebar.date_input("End Date", value=max(pd.to_datetime(totals['event_date'])))                               
-
-# add multi select state filter
-st.sidebar.markdown('## Choose Campaign')
-all_campaigns = totals['campaign_name'].unique()
-select_all_campaigns = st.sidebar.checkbox("Select All Campaigns", value=False)
-
-if select_all_campaigns:
-    campaign_select = all_campaigns
-else:
-    campaign_select = st.sidebar.multiselect(
-        "Select State(s)", 
-        options=all_campaigns, 
-        default=["campaign_name_1"] if "campaign_name_1" in all_campaigns else []
-    )
-    
-# add multi select state filter
-st.sidebar.markdown('## Choose State')
-all_states = totals['state'].unique()
-select_all_states = st.sidebar.checkbox("Select All States", value=False)
-
-if select_all_states:
-    state_select = all_states
-else:
-    state_select = st.sidebar.multiselect(
-        "Select State(s)", 
-        options=all_states, 
-        default=["MI"] if "MI" in all_states else []
-    )
-
-metric_options = ['Users', 'Minutes', 'Impressions', 'Clicks', 'Minutes per User']
-metric_select = st.sidebar.selectbox("Select Metric", options=metric_options)
 
 
 ##############################################################
