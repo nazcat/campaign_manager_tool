@@ -35,10 +35,6 @@ st.header("I love you!")
 #   "universe_domain": "googleapis.com"
 # }
 
-credentials = dict(st.secrets["gcp_service_account"])
-# client = storage.Client.from_service_account_info(credentials)
-credentials_json = json.dumps(credentials)
-
 # Test connection to the bucket
 # bucket_name = 'campaign_manager_tool'
 # bucket = client.bucket(bucket_name)
@@ -56,13 +52,22 @@ credentials_json = json.dumps(credentials)
 # anon_df = pd.read_csv(io.StringIO(content))
 # st.dataframe(anon_df)
 
+# Convert credentials to JSON string
+credentials = dict(st.secrets["gcp_service_account"])
+credentials_json = json.dumps(credentials)
 
+# Initialize GCS filesystem
+fs = gcsfs.GCSFileSystem(token=credentials_json)
+
+# Test if file exists
 file_path = "gs://campaign_manager_tool/anon_processed_unique_device_v3.csv"
-anon_df = pd.read_csv(file_path,
-                 sep=",",
-                 storage_options={"token": credentials_json})
-
-st.dataframe(anon_df)
+if fs.exists(file_path):
+    print("File exists!")
+    with fs.open(file_path, 'r') as f:
+        anon_df = pd.read_csv(f)
+    print(anon_df.head())
+else:
+    print("File not found!")
 
 
 # ############################
