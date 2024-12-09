@@ -10,6 +10,7 @@ from google.cloud import storage
 from google.oauth2 import service_account
 import io
 import json
+import toml
 
 # set up wide page on streamlit app
 st.set_page_config(layout='centered', initial_sidebar_state='expanded')
@@ -34,7 +35,7 @@ st.header("I love you!")
 #   "universe_domain": "googleapis.com"
 # }
 
-credentials = st.secrets["GCP_SERVICE_ACCOUNT"]
+credentials = st.secrets["gcp_service_account"]
 # #Downloaded credentials in JSON format
 client = storage.Client.from_service_account_info(credentials)
 
