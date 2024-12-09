@@ -57,7 +57,7 @@ client = storage.Client.from_service_account_info(credentials)
 file_path = "gs://campaign_manager_tool/anon_processed_unique_device_v3.csv"
 anon_df = pd.read_csv(file_path,
                  sep=",",
-                 storage_options={"token": service_key})
+                 storage_options={"token": credentials})
 
 st.dataframe(anon_df)
 
