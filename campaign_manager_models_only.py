@@ -35,12 +35,10 @@ st.header("I love you!")
 
 credentials = st.secrets["gcp_service_account"]
 client = storage.Client.from_service_account_info(credentials)
-st.success("Google Cloud Client initialized successfully.")
 
 # Test connection to the bucket
 bucket_name = 'campaign_manager_tool'
 bucket = client.get_bucket(bucket_name)
-st.write(f"Successfully connected to bucket: {bucket_name}")
 
 try:
     # Test accessing the file
