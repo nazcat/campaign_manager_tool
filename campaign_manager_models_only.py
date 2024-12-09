@@ -38,19 +38,20 @@ client = storage.Client.from_service_account_info(credentials)
 
 # Test connection to the bucket
 bucket_name = 'campaign_manager_tool'
-bucket = client.get_bucket(bucket_name)
+bucket = client.bucket(bucket_name)
 
-try:
-    # Test accessing the file
-    file_name = 'anon_processed_unique_device_v3.csv'
-    blob = bucket.blob(file_name)
-    content = blob.download_as_bytes()
-    anon_df = pd.read_csv(io.BytesIO(content))
-    st.dataframe(anon_df)
+file_name = 'anon_processed_unique_device_v3.csv'
+blob = bucket.blob(file_name)
+# content = blob.download_as_bytes()
+# anon_df = pd.read_csv(io.BytesIO(content))
 
-except Exception as e:
-    st.error(f"Error loading CSV: {e}")
-    st.stop()
+
+# Download the file as a string
+content = blob.download_as_string()
+
+# Read the CSV string into a Pandas DataFrame
+anon_df = pd.read_csv(io.StringIO(content))
+st.dataframe(anon_df)
 
 # ############################
 # # Load Datasets for Models #
