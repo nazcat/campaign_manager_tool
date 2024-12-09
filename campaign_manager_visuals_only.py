@@ -357,7 +357,7 @@ with col2:
     
 # # Row 2
 # st.markdown('### Line chart')
-col1, col2= st.columns((1,1,1))
+col1, col2, col3 = st.columns((1,1,1))
 with col1:
     st.markdown(f"##### {metric_select} by Genre")
     st.markdown("###### For Genres >= 10 Users")
