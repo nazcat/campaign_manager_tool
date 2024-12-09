@@ -17,21 +17,6 @@ Below are few of the many business questions we're looking to answer.
 - For campaign budgeting optimization for upcoming quarters, how can marketing best spend their budget to optimize spend across marketing partners to increase ROI?
 - Which states bring in the most users through campaign ads? Which states have the most total minutes watched per user from an ad?
 
-### Methods
-
-Methods - By using a blend of machine learning methods, including supervised and unsupervised processes, we hope to provide a valuable dashboard tool directly to senior management at PlutoTV that helps evaluate past campaigns while informing new ones. Methods that we are considering include: 
-
-Supervised: Classification and Regression
-Linear and Logistic Regression: Appears useful in this case due to the wide variety of usage among customers (a continuous variable). We anticipate that there will be some level of preprocessing, such as one-hot encoding and standard scalar, to restructure the data.
-ARIMA: We may employ it as part of the dashboard if effective on forecasting our time series based data, such as users becoming active over the course of a campaign.
-
-Unsupervised: K-means clustering
-We have discussed using K-means clustering to both explore the data and as a potential predictive tool as its versatility in sifting through a variety of outcomes may be well suited to the disparate nature of the business results: watch time, across a variety of campaigns and genres.
-
-Deep Learning: Long Short Term Memory (LSTM)
-We would like to supplement both unsupervised and supervised learning methods with a neural network to better understand predictions over time. LSTM uses long-term dependencies in sequential data, which can be applied to our time series dataset. 
-
-
 ## Getting Started
 
 ### Dependencies
@@ -46,7 +31,12 @@ We would like to supplement both unsupervised and supervised learning methods wi
 
 ### Installing
 
-* How/where to download your program
+The code is accessible in two different ways:
+Using either command prompt for Windows or terminal for mac, run the below:
+```
+git clone https://github.com/nazcat/campaign_manager_tool.git
+```
+
 * Any modifications needed to be made to files/folders
 
 ### Executing program
