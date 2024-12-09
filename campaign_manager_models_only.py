@@ -10,8 +10,6 @@ from google.cloud import storage
 from google.oauth2 import service_account
 import io
 from st_files_connection import FilesConnection
-import gcsfs
-import json
 
 # set up wide page on streamlit app
 st.set_page_config(layout='centered', initial_sidebar_state='expanded')
