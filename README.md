@@ -12,7 +12,7 @@ This project aims to satisfy marketers’ needs in two ways:
 A beta version of the dashboard can be viewed <b>[HERE](https://campaign-manager-visuals.streamlit.app/)</b>.
 
 
-#### Business Objectives
+### Business Objectives
 
 Below are few of the many business questions we're looking to answer.
 - What is the impact of campaign spend from this week to next week for total active users, viewed minutes, and minutes per user?
@@ -22,12 +22,12 @@ Below are few of the many business questions we're looking to answer.
 
 ## Getting Started
 
-#### Dependencies
+### Dependencies
 
 - Prerequisites: Requires a programming tool of choice (Jupyter Notebook, VS Code, Google Colab, etc)
 - Libraries: See [requirements.txt](https://github.com/nazcat/campaign_manager_tool/blob/main/requirements.txt)
 
-#### Installing
+### Installing
 
 File downloads: Refer to our GDrive to download a total of four files from [Streamlit Datasets](https://drive.google.com/drive/folders/1_Tq1ZCAZNYtc6vUbpKIpBLeoZeKRvH38?usp=sharing):
   - [anon_processed_unique_device_v3.csv](https://drive.google.com/file/d/1PvHjL6HEmSuEix0vLT3FJalf7NEm15Ql/view?usp=sharing) -  Raw datafile with encrypted features (i.e. device_id, campaign_id, etc)
@@ -43,7 +43,10 @@ git clone https://github.com/nazcat/campaign_manager_tool.git
 2. Download .zip file from Github in the [campaign_manager_tool](https://github.com/nazcat/campaign_manager_tool/tree/main) repository, located under the green "code" dropdown at the top.
 
 
-#### Executing program
+<b>NOTE FOR BOTH OPTIONS:</b> Due to file size limitations of 25MB in Github, you will need to download [anon_processed_unique_device_v3.csv](https://drive.google.com/file/d/1PvHjL6HEmSuEix0vLT3FJalf7NEm15Ql/view?usp=sharing) separately from GDrive. Make sure to add to the /data/ folder.
+
+
+### Executing program
 
 In order to run the Streamlit app locally, follow the below in order:
 1. Open command prompt or terminal, and open the repository location:
@@ -54,9 +57,6 @@ cd file_path/
 ```
 streamlit run campaign_manager_visuals_only.py
 ```
-
-NOTE FOR BOTH OPTIONS: Due to file size limitations of 25MB in Github, you will need to download [anon_processed_unique_device_v3.csv](https://drive.google.com/file/d/1PvHjL6HEmSuEix0vLT3FJalf7NEm15Ql/view?usp=sharing) separately from GDrive. Make sure to add to the /data/ folder.
-
 
 ## Help
 
