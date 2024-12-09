@@ -250,7 +250,7 @@ for bar in bars:
                  textcoords='offset points',
                  ha='center', va='bottom')
 
-avg = date_diff_df[metric_select].mean()
+avg = filtered_date_diff_agg[metric_select].mean()
 
 # plot average
 plt.axhline(y=avg, ls='--', color='#FFCB05', label='Average') # '#00274C','#FFCB05'
