@@ -23,47 +23,37 @@ Below are few of the many business questions we're looking to answer.
 
 - Prerequisites: Requires a programming tool of choice (Jupyter Notebook, VS Code, Google Colab, etc)
 - Libraries: See [requirements.txt](https://github.com/nazcat/campaign_manager_tool/blob/main/requirements.txt)
-- File downloads: Refer to our GDrive to download a total of four files from [Streamlit Datasets](https://drive.google.com/drive/folders/1_Tq1ZCAZNYtc6vUbpKIpBLeoZeKRvH38?usp=sharing):
+
+### Installing
+
+File downloads: Refer to our GDrive to download a total of four files from [Streamlit Datasets](https://drive.google.com/drive/folders/1_Tq1ZCAZNYtc6vUbpKIpBLeoZeKRvH38?usp=sharing):
   - [anon_processed_unique_device_v3.csv](https://drive.google.com/file/d/1PvHjL6HEmSuEix0vLT3FJalf7NEm15Ql/view?usp=sharing) -  Raw datafile with encrypted features (i.e. device_id, campaign_id, etc)
   - [anan_campaign_modeling_data_v3.csv](https://drive.google.com/file/d/1RQabm5Sh0MtiJoi1zKyHGJc049y09JBB/view?usp=sharing) - Data aggregated to the campaign level
   - [total_genre.csv](https://drive.google.com/file/d/19PRykaEUS-lHebwqvpzBe4v5OGNmAUmh/view?usp=sharing) - Data aggregated to the genre level
   - [totals.csv](https://drive.google.com/file/d/1PHRAEzjbOcjqLb3I4aZbHwM2-iezdo0G/view?usp=sharing) - Data aggregated to the marketing partner level
 
-### Installing
-
 The code is accessible in two different ways:
-
-#### First option:
-Using either command prompt for Windows or terminal for mac, run the below steps in order:
-
-1. Clone Github repository
+1. Using either command prompt for Windows or terminal for mac, clone Github repository:
 ```
 git clone https://github.com/nazcat/campaign_manager_tool.git
 ```
-2. Open command prompt or terminal, and open the repository location:
+2. Download .zip file from Github in the [campaign_manager_tool](https://github.com/nazcat/campaign_manager_tool/tree/main) repository, located under the green "code" dropdown at the top.
+
+
+### Executing program
+
+In order to run the Streamlit app locally, follow the below in order:
+1. Open command prompt or terminal, and open the repository location:
 ```
 cd file_path/
 ```
-3. Open locally in Streamlit:
+2. Open locally in Streamlit:
 ```
 streamlit run campaign_manager_visuals_only.py
 ```
 
-NOTE: Due to file size limitations of 25MB in Github, you will need to download [anon_processed_unique_device_v3.csv](https://drive.google.com/file/d/1PvHjL6HEmSuEix0vLT3FJalf7NEm15Ql/view?usp=sharing) separately from GDrive. Make sure to add to the /data/ folder.
-
-#### Second option:
-Download .zip file from Github in the [campaign_manager_tool](https://github.com/nazcat/campaign_manager_tool/tree/main) repository, located under the green "code" dropdown at the top.
-
 NOTE FOR BOTH OPTIONS: Due to file size limitations of 25MB in Github, you will need to download [anon_processed_unique_device_v3.csv](https://drive.google.com/file/d/1PvHjL6HEmSuEix0vLT3FJalf7NEm15Ql/view?usp=sharing) separately from GDrive. Make sure to add to the /data/ folder.
-* Any modifications needed to be made to files/folders
 
-### Executing program
-
-* How to run the program
-* Step-by-step bullets
-```
-code blocks for commands
-```
 
 ## Help
 
