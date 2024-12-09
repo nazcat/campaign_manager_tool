@@ -1,0 +1,25 @@
+name: Load CSV from GCS
+
+on:
+  workflow_dispatch:
+
+jobs:
+  load-csv:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Google Cloud credentials
+      run: |
+        echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" > key.json
+        export GOOGLE_APPLICATION_CREDENTIALS="key.json"
+
+    - name: Install dependencies
+      run: |
+        pip install google-cloud-storage pandas
+
+    - name: Run script
+      run: |
+        python campaign_manager_tool.py
