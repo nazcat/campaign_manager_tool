@@ -33,26 +33,26 @@ st.header("I love you!")
 #   "universe_domain": "googleapis.com"
 # }
 
+credentials = st.secrets["gcp_service_account"]
+client = storage.Client.from_service_account_info(credentials)
+st.success("Google Cloud Client initialized successfully.")
+
+# Test connection to the bucket
+bucket_name = 'campaign_manager_tool'
+bucket = client.get_bucket(bucket_name)
+st.write(f"Successfully connected to bucket: {bucket_name}")
+
 try:
-    credentials = st.secrets["gcp_service_account"]
-    client = storage.Client.from_service_account_info(credentials)
-    st.success("Google Cloud Client initialized successfully.")
-    
-    # Test connection to the bucket
-    bucket_name = 'campaign_manager_tool'
-    bucket = client.get_bucket(bucket_name)
-    st.write(f"Successfully connected to bucket: {bucket_name}")
-    
     # Test accessing the file
     file_name = 'anon_processed_unique_device_v3.csv'
     blob = bucket.blob(file_name)
-    # content = blob.download_as_bytes()
-    # anon_df = pd.read_csv(io.BytesIO(content))
-    
-    # st.dataframe(anon_df)
+    content = blob.download_as_bytes()
+    anon_df = pd.read_csv(io.BytesIO(content))
+    st.dataframe(anon_df)
 
 except Exception as e:
-    st.error(f"Error: {e}")
+    st.error(f"Error loading CSV: {e}")
+    st.stop()
 
 # ############################
 # # Load Datasets for Models #
