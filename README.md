@@ -9,7 +9,7 @@ This project aims to satisfy marketers’ needs in two ways:
 1. Campaign Effectiveness: A one-stop shop tool for marketers to be able analyze their campaigns visually and gain high level insights.
 2. Campaign Planning/Forecasting: Plan future campaigns using various machine and deep learning techniques such as random rainforest and gradient boost regressors.
 
-A beta version of the dashboard can be viewed <b>[HERE](https://campaign-manager-visuals.streamlit.app/)</b>.
+A beta version of the dashboard can be viewed <b>[HERE](https://campaign-manager.streamlit.app/)</b>.
 
 
 ### Business Objectives
@@ -40,7 +40,7 @@ The code is accessible in two different ways:
 ```
 git clone https://github.com/nazcat/campaign_manager_tool.git
 ```
-2. Download .zip file from Github in the [campaign_manager_tool](https://github.com/nazcat/campaign_manager_tool/tree/main) repository, located under the green "code" dropdown at the top.
+2. Download .zip file from Github in the [campaign_manager_tool](https://github.com/nazcat/campaign_manager_tool/) repository, located under the green "code" dropdown at the top.
 
 
 ### Executing program
