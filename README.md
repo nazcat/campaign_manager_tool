@@ -1,6 +1,10 @@
-# Project Title
+# Campaign Performance and Predictions Tool
 
-Simple overview of use/purpose.
+Data driven decisions have become an integral part of marketing in various industries. We intend to research best practices and develop a dashboard to evaluate two key aspects of marketing for PlutoTV:
+- Campaign effectiveness 
+- Campaign Planning/Forecasting
+
+A beta version of the dashboard can be viewed <b><a href="[https://readme.com/](https://campaign-manager-visuals.streamlit.app/)" target="_blank">HERE</a></b>.
 
 ## Description
 
