@@ -20,6 +20,11 @@ Below are few of the many business questions we're looking to answer.
 - Which states bring in the most users through campaign ads? Which states have the most total minutes watched per user from an ad?
 
 
+## Motivation
+
+[ADD TEXT HERE]
+
+
 ## Getting Started
 
 ### Dependencies
@@ -55,12 +60,10 @@ cd file_path/
 streamlit run campaign_manager_visuals_only.py
 ```
 
-## Help
+## Closing Thoughts
 
-Any advise for common problems or issues.
-```
-command to run if program contains helper info
-```
+[ADD TEXT HERE]
+
 
 ## Authors
 
@@ -77,4 +80,4 @@ Justin Barry
     * Initial Release
 
 
-## Acknowledgments
+## References
