@@ -75,6 +75,7 @@ else:
         default=["MI"] if "MI" in all_states else []
     )
 
+st.sidebar.markdown('## Choose Metric')
 metric_options = ['Users', 'Minutes', 'Impressions', 'Clicks', 'Minutes per User']
 metric_select = st.sidebar.selectbox("Select Metric", options=metric_options)
 
