@@ -46,10 +46,11 @@ bucket = client.bucket(bucket_name)
 blob = bucket.blob(file_name)
 
 # # Download the file content and read as a dataframe
-# content = blob.download_as_bytes()
-# anon_df = pd.read_csv(io.BytesIO(content))
+content = blob.download_as_bytes()
+anon_df = pd.read_csv(io.BytesIO(content))
 
-# print(anon_df)
+st.markdown("##### Genres by Campaign(s)")
+st.dataframe(anon_df)
 
 # ############################
 # # Load Datasets for Models #
