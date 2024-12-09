@@ -36,7 +36,7 @@ st.header("I love you!")
 
 credentials = st.secrets["gcp_service_account"]
 # client = storage.Client.from_service_account_info(credentials)
-credentials_json = json.dumps(service_key
+credentials_json = json.dumps(credentials)
 
 # Test connection to the bucket
 # bucket_name = 'campaign_manager_tool'
