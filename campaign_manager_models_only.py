@@ -62,11 +62,12 @@ def load_data():
 # Load Models for Prediction Tools
 @st.cache_resource
 def load_models():
+  with st.spinner('Loading model...'):
     reg_model = joblib.load(r'models/regression_model.pkl')
     rf_classifier = joblib.load(r'models/rf_classifier.pkl')
     nn_model = joblib.load(r'models/nearest_neighbors_model.pkl')
     scaler = joblib.load(r'models/nearest_neighbors_scaler.pkl')
-    return reg_model, rf_classifier, nn_model, scaler
+  return reg_model, rf_classifier, nn_model, scaler
 
 # Preprocess Engagement Data
 @st.cache_data
