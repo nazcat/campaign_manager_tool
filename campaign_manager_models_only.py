@@ -49,7 +49,7 @@ try:
     # content = blob.download_as_bytes()
     # anon_df = pd.read_csv(io.BytesIO(content))
     
-    st.dataframe(anon_df)
+    # st.dataframe(anon_df)
 
 except Exception as e:
     st.error(f"Error: {e}")
