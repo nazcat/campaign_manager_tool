@@ -134,14 +134,11 @@ else:
 # Filter data for selected dates, campaigns, and states
 filtered_map_df = totals[(pd.to_datetime(totals['event_date']) >= pd.to_datetime(start_date)) & (pd.to_datetime(totals['event_date']) <= pd.to_datetime(end_date)) & (totals['state'].isin(state_select)) & (totals['campaign_name'].isin(campaign_select))].copy()
 
-filtered_map_agg = filtered_map_df.groupby(['state','latitude','longitude']).agg(
-    {'Users': np.sum, 
-     'Minutes': np.sum,
-     'Impressions': np.sum,
-     'Clicks': np.sum,
-     'Minutes per User': np.mean
-     }).round(1).reset_index()
-
+if metric_select == 'minutes_per_user':
+    filtered_map_agg = filtered_map_df.groupby(['state','latitude','longitude']).agg({metric_select: np.mean}).round(1).reset_index()
+else:
+    filtered_map_agg = filtered_map_df.groupby(['marketing_partner']).agg({metric_select: np.sum}).round(1).reset_index()
+    
 # scatter geo version
 fig1 = px.scatter_geo(
     filtered_map_agg,
@@ -167,13 +164,10 @@ fig1.update_layout(coloraxis_showscale=False)
 # Filter data for selected dates, campaigns, and states
 filtered_partner_df = totals[(pd.to_datetime(totals['event_date']) >= pd.to_datetime(start_date)) & (pd.to_datetime(totals['event_date']) <= pd.to_datetime(end_date)) & (totals['state'].isin(state_select)) & (totals['campaign_name'].isin(campaign_select))]
 
-filtered_partner_agg = filtered_partner_df.groupby(['marketing_partner']).agg(
-    {'Users': np.sum, 
-     'Minutes': np.sum,
-     'Impressions': np.sum,
-     'Clicks': np.sum,
-     'Minutes per User': np.mean
-     }).round(1).reset_index()
+if metric_select == 'minutes_per_user':
+    filtered_partner_agg = filtered_partner_df.groupby(['marketing_partner']).agg({metric_select: np.mean}).round(1).reset_index()
+else:
+    filtered_partner_agg = filtered_partner_df.groupby(['marketing_partner']).agg({metric_select: np.sum}).round(1).reset_index()
 
 labels = filtered_partner_agg['marketing_partner']
 sizes = filtered_partner_agg[metric_select]
@@ -208,13 +202,10 @@ fig2.update_traces(
 # Filter data for selected dates, campaigns, and states
 filtered_genre_df = totals_genre[(pd.to_datetime(totals_genre['event_date']) >= pd.to_datetime(start_date)) & (pd.to_datetime(totals_genre['event_date']) <= pd.to_datetime(end_date)) & (totals_genre['state'].isin(state_select)) & (totals_genre['campaign_name'].isin(campaign_select))].copy()
 
-filtered_genre_agg = filtered_genre_df.groupby(['content_genre']).agg(
-    {'Users': np.sum, 
-     'Minutes': np.sum,
-     'Impressions': np.sum,
-     'Clicks': np.sum,
-     'Minutes per User': np.mean
-     }).round(1).reset_index()
+if metric_select == 'minutes_per_user':
+    filtered_genre_agg = filtered_genre_df.groupby(['content_genre']).agg({metric_select: np.mean}).round(1).reset_index()
+else:
+    filtered_genre_agg = filtered_genre_df.groupby(['content_genre']).agg({metric_select: np.sum}).round(1).reset_index()
 
 # rename columns for visuals
 filtered_genre_agg = filtered_genre_agg.rename(columns={'content_genre':'Genre'})
@@ -243,17 +234,14 @@ fig3.update_layout(
 # Filter data for selected dates, campaigns, and states
 filtered_date_diff_df = totals[(pd.to_datetime(totals['event_date']) >= pd.to_datetime(start_date)) & (pd.to_datetime(totals['event_date']) <= pd.to_datetime(end_date)) & (totals['state'].isin(state_select)) & (totals['campaign_name'].isin(campaign_select))]
 
-df_imp_evnt_agg = filtered_date_diff_df.groupby('imp_evnt_binned').agg(
-    {'Users': np.sum, 
-     'Minutes': np.sum,
-     'Impressions': np.sum,
-     'Clicks': np.sum,
-     'Minutes per User': np.mean
-     }).round(1).reset_index()
+if metric_select == 'minutes_per_user':
+    filtered_date_diff_agg = filtered_date_diff_df.groupby(['imp_evnt_binned']).agg({metric_select: np.mean}).reset_index()
+else:
+    filtered_date_diff_agg = filtered_date_diff_df.groupby(['imp_evnt_binned']).agg({metric_select: np.sum}).reset_index()
 
 fig4 = plt.figure(figsize=(6, 6))
 
-bars = plt.bar(df_imp_evnt_agg['imp_evnt_binned'], df_imp_evnt_agg[metric_select]) # '#00274C','#FFCB05'
+bars = plt.bar(filtered_date_diff_agg['imp_evnt_binned'], filtered_date_diff_agg[metric_select]) # '#00274C','#FFCB05'
 for bar in bars:
     yval = bar.get_height()
     plt.annotate(f'{int(yval/1000)}K',
@@ -262,7 +250,7 @@ for bar in bars:
                  textcoords='offset points',
                  ha='center', va='bottom')
 
-avg = df_imp_evnt_agg[metric_select].mean()
+avg = date_diff_df[metric_select].mean()
 
 # plot average
 plt.axhline(y=avg, ls='--', color='#FFCB05', label='Average') # '#00274C','#FFCB05'
@@ -276,7 +264,7 @@ plt.ylabel(f"Total {metric_select}",fontsize=10)
 plt.xlabel('Days', fontsize=10)
 
 # Set the y limits making the maximum 10% greater
-ymin, ymax = min(df_imp_evnt_agg[metric_select]), max(df_imp_evnt_agg[metric_select])
+ymin, ymax = min(filtered_date_diff_agg[metric_select]), max(filtered_date_diff_agg[metric_select])
 plt.ylim(ymin, 1.1 * ymax)
 plt.gca().yaxis.set_major_formatter(mtick.FuncFormatter(lambda x, _: f'{int(x/1000)}K'))
 # plt.title("Days from Campaign to Streaming")
@@ -292,14 +280,14 @@ plt.tick_params(axis='both', which='both', length=0)
 filtered_trend_df = totals[(pd.to_datetime(totals['event_date']) >= pd.to_datetime(start_date)) & (pd.to_datetime(totals['event_date']) <= pd.to_datetime(end_date)) & (totals['state'].isin(state_select)) & (totals['campaign_name'].isin(campaign_select))].copy()
 
 if metric_select == 'minutes_per_user':
-    trend_df = filtered_trend_df.groupby(['event_date']).agg({metric_select: np.mean}).reset_index()
+    filtered_trend_agg = filtered_trend_df.groupby(['event_date']).agg({metric_select: np.mean}).round(1).reset_index()
 else:
-    trend_df = filtered_trend_df.groupby(['event_date']).agg({metric_select: np.sum}).reset_index()
+    filtered_trend_agg = filtered_trend_df.groupby(['event_date']).agg({metric_select: np.sum}).round(1).reset_index()
 
 fig5, ax = plt.subplots(figsize=(6, 5))
 
 #forecasts
-plt.plot(pd.to_datetime(trend_df['event_date']), trend_df[metric_select])
+plt.plot(pd.to_datetime(filtered_trend_agg['event_date']), filtered_trend_agg[metric_select])
 
 # format plot
 plt.box(False)
