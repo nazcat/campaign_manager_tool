@@ -12,7 +12,7 @@ import io
 
 
 # set up wide page on streamlit app
-st.set_page_config(layout='central', initial_sidebar_state='expanded')
+st.set_page_config(layout='centered', initial_sidebar_state='expanded')
 
 ##########################################
 # load file for models from Google Cloud #
