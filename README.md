@@ -32,11 +32,29 @@ Below are few of the many business questions we're looking to answer.
 ### Installing
 
 The code is accessible in two different ways:
-Using either command prompt for Windows or terminal for mac, run the below:
+
+#### First option:
+Using either command prompt for Windows or terminal for mac, run the below steps in order:
+
+1. Clone Github repository
 ```
 git clone https://github.com/nazcat/campaign_manager_tool.git
 ```
+2. Open command prompt or terminal, and open the repository location:
+```
+cd file_path/
+```
+3. Open locally in Streamlit:
+```
+streamlit run campaign_manager_visuals_only.py
+```
 
+NOTE: Due to file size limitations of 25MB in Github, you will need to download [anon_processed_unique_device_v3.csv](https://drive.google.com/file/d/1PvHjL6HEmSuEix0vLT3FJalf7NEm15Ql/view?usp=sharing) separately from GDrive. Make sure to add to the /data/ folder.
+
+#### Second option:
+Download .zip file from Github in the [campaign_manager_tool](https://github.com/nazcat/campaign_manager_tool/tree/main) repository, located under the green "code" dropdown at the top.
+
+NOTE FOR BOTH OPTIONS: Due to file size limitations of 25MB in Github, you will need to download [anon_processed_unique_device_v3.csv](https://drive.google.com/file/d/1PvHjL6HEmSuEix0vLT3FJalf7NEm15Ql/view?usp=sharing) separately from GDrive. Make sure to add to the /data/ folder.
 * Any modifications needed to be made to files/folders
 
 ### Executing program
