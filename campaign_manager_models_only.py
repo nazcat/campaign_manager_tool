@@ -6,14 +6,9 @@ import matplotlib.pyplot as plt # version 3.7.1
 import matplotlib.ticker as mtick
 import joblib
 from sklearn.ensemble import RandomForestClassifier
-from google.cloud import storage
-from google.oauth2 import service_account
-import io
-from st_files_connection import FilesConnection
 
 # set up wide page on streamlit app
 st.set_page_config(layout='centered', initial_sidebar_state='expanded')
-
 
 ############################
 # Load Datasets for Models #
