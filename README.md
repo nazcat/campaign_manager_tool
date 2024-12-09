@@ -1,4 +1,4 @@
-## Campaign Performance and Predictions Tool
+## Campaign Manager Tool
 
 
 ### Introduction
@@ -6,8 +6,8 @@
 In today’s digital era, marketing has considerably evolved in data availability and technology. From ad hoc reporting insights to AI-powered machine learning methods, data driven decisions have become an integral part of marketing in various industries. Two popular themes include campaign effectiveness and forecasting. Marketing teams are spearheading the use of machine learning with their campaigns to engage with their customers. Fine tuning the campaign process by targeting groups of individuals who are more likely to install or subscribe to a product allows for companies to allocate their marketing resources and budget more efficiently.
 
 This project aims to satisfy marketers’ needs in two ways: 
-1. Campaign Effectiveness: A one-stop shop tool for marketers to be able analyze their campaigns visually and gain high level insights.
-2. Campaign Planning/Forecasting: Plan future campaigns using various machine and deep learning techniques such as random rainforest and gradient boost regressors.
+1. <b>Campaign Effectiveness:</b> A one-stop shop tool for marketers to be able analyze their campaigns visually and gain high level insights.
+2. <b>Campaign Planning/Forecasting:</b> Plan future campaigns using various machine and deep learning techniques such as random rainforest and gradient boost regressors.
 
 A beta version of the dashboard can be viewed <b>[HERE](https://campaign-manager.streamlit.app/)</b>.
 
