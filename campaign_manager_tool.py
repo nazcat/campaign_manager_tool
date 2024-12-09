@@ -1,4 +1,3 @@
-import io
 import joblib
 import numpy as np
 import pandas as pd
@@ -7,8 +6,7 @@ import plotly.express as px
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
 import matplotlib.dates as mdates
-from google.cloud import storage
-from google.oauth2 import service_account
+from sklearn.ensemble import RandomForestClassifier
 
 
 #################################
@@ -44,48 +42,13 @@ totals_genre = totals_genre.rename(
     'minutes_per_user': 'Minutes per User'
     })
 
-##########################################
-# load file for models from Google Cloud #
-##########################################
-# Load file anon_processed_unique_device_v3.csv from GCP
-
-# Set up Google Cloud credentials using secrets stored in Streamlit Cloud
-service_key = {
-  "type": "service_account",
-  "project_id": st.secrets['PROJECT_ID'],
-  "private_key_id": st.secrets['PRIVATE_KEY_ID'],
-  "private_key": st.secrets['PRIVATE_KEY'],
-  "client_email": st.secrets['CLIENT_EMAIL'],
-  "client_id": st.secrets['CLIENT_ID'],
-  "auth_uri": st.secrets['AUTH_URI'],
-  "token_uri": st.secrets['TOKEN_URI'],
-  "auth_provider_x509_cert_url": st.secrets['AUTH_PROVIDER_URL'],
-  "client_x509_cert_url": st.secrets['CLIENT_CERT_URL'],
-  "universe_domain": "googleapis.com"
-}
-
-#Downloaded credentials in JSON format
-project_id=service_key["project_id"]
-credentials = service_account.Credentials.from_service_account_info(service_key)
-client = storage.Client(project=project_id,credentials=credentials)
-
-# Access the file in the bucket
-bucket_name = 'campaign_manager_tool'
-file_name = 'anon_processed_unique_device_v3.csv'
-bucket = client.bucket(bucket_name)
-blob = bucket.blob(file_name)
-
-# Download the file content and read as a dataframe
-content = blob.download_as_bytes()
-anon_df = pd.read_csv(io.BytesIO(content))
-
 
 ############################
 # Load Datasets for Models #
 ############################
 @st.cache_data
 def load_data():
-    engagement_data = anon_df
+    engagement_data = pd.read_csv('data/anon_agg_for_models.csv')
     campaign_data = pd.read_csv('data/anan_campaign_modeling_data_v3.csv')
     return engagement_data, campaign_data
 
@@ -99,15 +62,15 @@ def load_models():
     return reg_model, rf_classifier, nn_model, scaler
 
 # Preprocess Engagement Data
-@st.cache_data
-def preprocess_engagement_data(data):
-    data['event_date'] = pd.to_datetime(data['event_date'].str[12:22])
-    data['install_date'] = pd.to_datetime(data['install_date'].str[12:22])
-    return data
+# @st.cache_data
+# def preprocess_engagement_data(data):
+#     data['event_date'] = pd.to_datetime(data['event_date'].str[12:22])
+#     data['install_date'] = pd.to_datetime(data['install_date'].str[12:22])
+#     return data
 
 # Load Data and Models
 engagement_data, campaign_data = load_data()
-engagement_data = preprocess_engagement_data(engagement_data)
+# engagement_data = preprocess_engagement_data(engagement_data)
 reg_model, rf_classifier, nn_model, scaler = load_models()
 
 # Columns for Genre Input
@@ -248,11 +211,7 @@ def campaign_performance():
 
     # Remove color bar
     fig1.update_layout(coloraxis_showscale=False)
-
-    # Display the chart and aggregated metric
-    # metric_sum = round(filtered_map_agg[metric_select],1)
-    # st.sidebar.metric(label=f"Total {metric_select.replace('_', ' ').title()} by Selected States(s)", value=filtered_map_agg[metric_select])
-
+    
 
     ##########################################
     # [Visual #2] Users by Marketing Partner #
