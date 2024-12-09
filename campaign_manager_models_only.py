@@ -46,8 +46,8 @@ try:
     # Test accessing the file
     file_name = 'anon_processed_unique_device_v3.csv'
     blob = bucket.blob(file_name)
-    content = blob.download_as_bytes()
-    anon_df = pd.read_csv(io.BytesIO(content))
+    # content = blob.download_as_bytes()
+    # anon_df = pd.read_csv(io.BytesIO(content))
     
     st.dataframe(anon_df)
 
