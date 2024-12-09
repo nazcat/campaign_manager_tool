@@ -4,7 +4,9 @@ Data driven decisions have become an integral part of marketing in various indus
 - Campaign effectiveness 
 - Campaign Planning/Forecasting
 
-A beta version of the dashboard can be viewed <b><a href="[https://readme.com/](https://campaign-manager-visuals.streamlit.app/)" target="_blank">HERE</a></b>.
+A beta version of the dashboard can be viewed <b>[HERE](https://campaign-manager-visuals.streamlit.app/)</b>.
+
+[ReadMe](readme.com)
 
 ## Description
 
