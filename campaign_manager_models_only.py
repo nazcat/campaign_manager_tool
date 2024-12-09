@@ -59,20 +59,20 @@ st.header("I love you!")
 
 # Create connection object and retrieve file contents.
 # Specify input format is a csv and to cache the result for 600 seconds.
-# conn = st.connection('gcs', type=FilesConnection)
-# anon_df = conn.read("campaign_manager_tool/anon_processed_unique_device_v3.csv", input_format="csv", ttl=600)
-# st.dataframe(anon_df)
+conn = st.connection('gcs', type=FilesConnection)
+anon_df = conn.read("campaign_manager_tool/anon_processed_unique_device_v3.csv", input_format="csv", ttl=600)
+st.dataframe(anon_df)
 
 
-credentials = dict(st.secrets["gcp_service_account"])
-credentials_json = json.dumps(credentials)
+# credentials = dict(st.secrets["gcp_service_account"])
+# credentials_json = json.dumps(credentials)
 
-fs = gcsfs.GCSFileSystem(token=credentials_json)
+# fs = gcsfs.GCSFileSystem(token=credentials_json)
 
-# List files in the bucket
-bucket_name = "campaign_manager_tool"
-files = fs.ls(f"gs://{bucket_name}")
-print(files)
+# # List files in the bucket
+# bucket_name = "campaign_manager_tool"
+# files = fs.ls(f"gs://{bucket_name}")
+# print(files)
 
 # ############################
 # # Load Datasets for Models #
