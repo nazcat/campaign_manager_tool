@@ -37,8 +37,8 @@ credentials = st.secrets["gcp_service_account"]
 client = storage.Client.from_service_account_info(credentials)
 
 # Test connection to the bucket
-bucket_name = 'campaign_manager_tool'
-bucket = client.bucket(bucket_name)
+# bucket_name = 'campaign_manager_tool'
+# bucket = client.bucket(bucket_name)
 
 # file_name = 'anon_processed_unique_device_v3.csv'
 # blob = bucket.blob(file_name)
@@ -53,11 +53,11 @@ bucket = client.bucket(bucket_name)
 # anon_df = pd.read_csv(io.StringIO(content))
 # st.dataframe(anon_df)
 
-anon_df = pd.DataFrame()
 
-for file in list(bucket.list_blobs()):
-    file_path="gs://{}/{}".format(file.bucket.name, file.name)
-    anon_df = anon_df.append(pd.read_csv(file_path, header=None))
+file_path = "gs://campaign_manager_tool/anon_processed_unique_device_v3.csv"
+anon_df = pd.read_csv(file_path,
+                 sep=",",
+                 storage_options={"token": service_key})
 
 st.dataframe(anon_df)
 
