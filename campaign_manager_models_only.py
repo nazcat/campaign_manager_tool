@@ -40,18 +40,27 @@ client = storage.Client.from_service_account_info(credentials)
 bucket_name = 'campaign_manager_tool'
 bucket = client.bucket(bucket_name)
 
-file_name = 'anon_processed_unique_device_v3.csv'
-blob = bucket.blob(file_name)
+# file_name = 'anon_processed_unique_device_v3.csv'
+# blob = bucket.blob(file_name)
 # content = blob.download_as_bytes()
 # anon_df = pd.read_csv(io.BytesIO(content))
 
 
-# Download the file as a string
-content = blob.download_as_string()
+# # Download the file as a string
+# content = blob.download_as_string()
 
-# Read the CSV string into a Pandas DataFrame
-anon_df = pd.read_csv(io.StringIO(content))
+# # Read the CSV string into a Pandas DataFrame
+# anon_df = pd.read_csv(io.StringIO(content))
+# st.dataframe(anon_df)
+
+anon_df = pd.DataFrame()
+
+for file in list(bucket.list_blobs()):
+    file_path="gs://{}/{}".format(file.bucket.name, file.name)
+    anon_df = anon_df.append(pd.read_csv(file_path, header=None))
+
 st.dataframe(anon_df)
+
 
 # ############################
 # # Load Datasets for Models #
