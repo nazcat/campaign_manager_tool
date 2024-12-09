@@ -18,7 +18,7 @@ st.set_page_config(layout='centered', initial_sidebar_state='expanded')
 # load file for models from Google Cloud #
 ##########################################
 # Load file anon_processed_unique_device_v3.csv from GCP
-print("I love you!"
+st.header("I love you!")
 # Set up Google Cloud credentials using secrets stored in Streamlit Cloud
 # service_key = {
 #   "type": "service_account",
