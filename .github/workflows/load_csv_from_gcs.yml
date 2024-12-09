@@ -22,4 +22,4 @@ jobs:
 
     - name: Run script
       run: |
-        python campaign_manager_tool.py
+        python campaign_manager_models_only.py
