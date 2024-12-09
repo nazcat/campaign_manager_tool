@@ -47,7 +47,7 @@ blob = bucket.blob(file_name)
 
 # # Download the file content and read as a dataframe
 content = blob.download_as_bytes()
-anon_df = pd.read_csv(io.BytesIO(content))
+# anon_df = pd.read_csv(io.BytesIO(content))
 
 
 # ############################
