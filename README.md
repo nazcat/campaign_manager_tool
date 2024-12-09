@@ -30,7 +30,7 @@ Below are few of the many business questions we're looking to answer.
 ### Installing
 
 File downloads: Refer to our GDrive to download a total of four files from [Streamlit Datasets](https://drive.google.com/drive/folders/1_Tq1ZCAZNYtc6vUbpKIpBLeoZeKRvH38?usp=sharing):
-  - [anon_processed_unique_device_v3.csv](https://drive.google.com/file/d/1PvHjL6HEmSuEix0vLT3FJalf7NEm15Ql/view?usp=sharing) -  Raw datafile with encrypted features (i.e. device_id, campaign_id, etc)
+  - [anon_agg_for_models.csv](https://drive.google.com/file/d/1PZzmOjY8bl-ZSRmrPxTx1pmU6sXmuV3x/view?usp=sharing) -  Aggregate datafile sampled to 125,000 records with encrypted features (i.e. device_id, campaign_id, etc)
   - [anan_campaign_modeling_data_v3.csv](https://drive.google.com/file/d/1RQabm5Sh0MtiJoi1zKyHGJc049y09JBB/view?usp=sharing) - Data aggregated to the campaign level
   - [total_genre.csv](https://drive.google.com/file/d/19PRykaEUS-lHebwqvpzBe4v5OGNmAUmh/view?usp=sharing) - Data aggregated to the genre level
   - [totals.csv](https://drive.google.com/file/d/1PHRAEzjbOcjqLb3I4aZbHwM2-iezdo0G/view?usp=sharing) - Data aggregated to the marketing partner level
@@ -41,9 +41,6 @@ The code is accessible in two different ways:
 git clone https://github.com/nazcat/campaign_manager_tool.git
 ```
 2. Download .zip file from Github in the [campaign_manager_tool](https://github.com/nazcat/campaign_manager_tool/tree/main) repository, located under the green "code" dropdown at the top.
-
-
-<b>NOTE FOR BOTH OPTIONS:</b> Due to file size limitations of 25MB in Github, you will need to download [anon_processed_unique_device_v3.csv](https://drive.google.com/file/d/1PvHjL6HEmSuEix0vLT3FJalf7NEm15Ql/view?usp=sharing) separately from GDrive. Make sure to add to the /data/ folder.
 
 
 ### Executing program
