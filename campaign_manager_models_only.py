@@ -41,13 +41,14 @@ client = storage.Client(project=project_id,credentials=credentials)
 
 # Access the file in the bucket
 bucket_name = 'campaign_manager_tool'
-file_name = 'anon_processed_unique_device_v3.csv'
+file_name = 'campaign_manager_tool/anon_processed_unique_device_v3.csv'
 bucket = client.bucket(bucket_name)
 blob = bucket.blob(file_name)
 
 # # Download the file content and read as a dataframe
 content = blob.download_as_bytes()
-# anon_df = pd.read_csv(io.BytesIO(content))
+anon_df = pd.read_csv(io.BytesIO(content))
+
 
 # ############################
 # # Load Datasets for Models #
