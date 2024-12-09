@@ -36,7 +36,7 @@ st.header("I love you!")
 
 credentials = st.secrets["GCP_SERVICE_ACCOUNT"]
 # #Downloaded credentials in JSON format
-client = storage.Client.from_service_account_info(json.loads(credentials))
+client = storage.Client.from_service_account_info(credentials)
 
 # Access the file in the bucket
 bucket_name = 'campaign_manager_tool'
